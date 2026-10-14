@@ -1032,7 +1032,7 @@
       justify-content: center;
       cursor: pointer;
       color: var(--text-secondary);
-      transition: color 0.15s, transform 0.15s;
+      transition: color 0.15s, transform 0.15s, filter 0.15s;
     }
 
     .player-ctrl-btn:hover {
@@ -1040,9 +1040,279 @@
       transform: scale(1.15);
     }
 
+    .player-ctrl-btn.active {
+      color: var(--flower) !important;
+      filter: drop-shadow(0 0 6px var(--flower));
+    }
+
     .player-play-btn {
       color: var(--flower);
       transform: scale(1.1);
+    }
+
+    /* ════ PLAYLIST & UP NEXT POPUP MENU ════ */
+    .player-playlist-menu {
+      position: absolute;
+      bottom: calc(100% + 14px);
+      right: 0;
+      width: 320px;
+      max-width: calc(100vw - 32px);
+      background: var(--player-card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 14px;
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(12px) scale(0.96);
+      transition: opacity 0.25s var(--ease-out), transform 0.25s var(--ease-out), visibility 0.25s;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .player-playlist-menu.show {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .playlist-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 10px;
+    }
+
+    .playlist-header-title {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--text-primary);
+      letter-spacing: 0.02em;
+    }
+
+    .playlist-header-title svg {
+      color: var(--flower);
+    }
+
+    .playlist-close-btn {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 18px;
+      line-height: 1;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: color 0.15s, background-color 0.15s;
+    }
+
+    .playlist-close-btn:hover {
+      color: var(--text-primary);
+      background: var(--bg-card-hover);
+    }
+
+    /* Up Next Banner Box */
+    .playlist-upnext-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: var(--player-bar-bg);
+      border: 1px solid var(--border-subtle);
+      margin-bottom: 12px;
+      transition: border-color 0.2s ease;
+    }
+
+    .playlist-upnext-card:hover {
+      border-color: var(--border-accent);
+    }
+
+    .upnext-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 9px;
+      font-weight: 700;
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.08em;
+      padding: 3px 7px;
+      border-radius: var(--radius-full);
+      background: var(--flower);
+      color: #FFFFFF;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .upnext-info {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .upnext-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .upnext-artist {
+      font-size: 10px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: 'DM Mono', monospace;
+    }
+
+    /* Tracklist items */
+    .playlist-track-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 290px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .playlist-track-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .playlist-track-list::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    .playlist-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+
+    .playlist-item:hover {
+      background: var(--bg-card-hover);
+      transform: translateX(2px);
+    }
+
+    .playlist-item.active {
+      background: rgba(255, 20, 0, 0.12);
+      border-left: 3px solid var(--flower);
+    }
+
+    html.day .playlist-item.active {
+      background: rgba(232, 50, 15, 0.08);
+      border-left: 3px solid var(--flower);
+    }
+
+    .playlist-item-num {
+      width: 18px;
+      font-size: 11px;
+      font-family: 'DM Mono', monospace;
+      color: var(--text-muted);
+      text-align: center;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .playlist-item.active .playlist-item-num {
+      color: var(--flower);
+      font-weight: 700;
+    }
+
+    .playlist-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .playlist-item-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .playlist-item.active .playlist-item-title {
+      color: var(--flower);
+    }
+
+    .playlist-item-artist {
+      font-size: 10px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: 'DM Mono', monospace;
+    }
+
+    .playlist-item-dur {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-family: 'DM Mono', monospace;
+      flex-shrink: 0;
+    }
+
+    /* Fixed open state while playlist menu is displayed */
+    .music-widget-fixed.playlist-open .player-card-box {
+      width: 290px;
+      height: 160px;
+    }
+
+    .music-widget-fixed.playlist-open .player-disc-peek {
+      height: 0px;
+      margin-bottom: 0px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .music-widget-fixed.playlist-open .player-info-row {
+      height: 80px;
+    }
+
+    .music-widget-fixed.playlist-open .player-disc-mini-wrap {
+      top: -12px;
+      left: -10px;
+      opacity: 1;
+    }
+
+    .music-widget-fixed.playlist-open .player-track-meta {
+      margin-left: -6px;
+    }
+
+    .music-widget-fixed.playlist-open .player-time-badge {
+      display: inline-block;
+    }
+
+    .music-widget-fixed.playlist-open .player-scrubber-row {
+      margin-top: 0;
     }
 
     /* ════ MAIN CONTENT LAYOUT ════ */
@@ -1265,20 +1535,15 @@
 
     .polaroid-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 24px;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 28px;
       margin-top: 32px;
     }
 
-    @media (max-width: 900px) {
-      .polaroid-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 520px) {
+    @media (max-width: 640px) {
       .polaroid-grid {
         grid-template-columns: 1fr;
+        gap: 24px;
       }
     }
 
@@ -1295,13 +1560,13 @@
     }
 
     .polaroid-card:hover {
-      transform: scale(1.08) rotate(0deg) !important;
+      transform: scale(1.06) rotate(0deg) !important;
       z-index: 20;
       box-shadow: 0 24px 50px rgba(0, 0, 0, 0.35), 0 0 0 2px var(--flower);
     }
 
     .polaroid-card:nth-child(1) {
-      transform: rotate(-3.5deg);
+      transform: rotate(-3deg);
     }
 
     .polaroid-card:nth-child(2) {
@@ -1313,13 +1578,26 @@
     }
 
     .polaroid-card:nth-child(4) {
-      transform: rotate(4deg);
+      transform: rotate(3deg);
+    }
+
+    .polaroid-card:nth-child(5) {
+      transform: rotate(-2.5deg);
+    }
+
+    .polaroid-card:nth-child(6) {
+      transform: rotate(2deg);
+    }
+
+    .polaroid-card:nth-child(7) {
+      transform: rotate(-1.5deg);
     }
 
     .polaroid-photo {
       width: 100%;
-      height: 210px;
+      height: 250px;
       object-fit: cover;
+      object-position: center 25%;
       border-radius: 4px;
       border: 1px solid rgba(0, 0, 0, 0.1);
     }
@@ -1355,13 +1633,13 @@
     }
 
     /* ══════════════════════════════════════════════════
-       INTERACTIVE BEFORE / AFTER SLIDER (GENUI)
+       INTERACTIVE BEFORE / AFTER SLIDER (HIMDRISHTI)
        ══════════════════════════════════════════════════ */
     .compare-container {
       position: relative;
       width: 100%;
       max-width: 900px;
-      height: 440px;
+      height: 460px;
       margin: 40px auto 0;
       border-radius: var(--radius-lg);
       overflow: hidden;
@@ -1369,6 +1647,7 @@
       box-shadow: 0 20px 48px rgba(0, 0, 0, 0.3);
       user-select: none;
       -webkit-user-select: none;
+      background: #08111e;
     }
 
     @media (max-width: 640px) {
@@ -1382,7 +1661,8 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
+      background: #08111e;
     }
 
     .compare-overlay {
@@ -1391,6 +1671,7 @@
       width: 50%;
       overflow: hidden;
       border-right: 3px solid var(--flower);
+      background: #08111e;
     }
 
     .compare-overlay img {
@@ -1400,7 +1681,8 @@
       height: 100%;
       width: 900px;
       max-width: none;
-      object-fit: cover;
+      object-fit: contain;
+      background: #08111e;
     }
 
     @media (max-width: 640px) {
@@ -1521,10 +1803,11 @@
     .plane-fly {
       position: absolute;
       top: 0;
+      bottom: 0;
       left: 50%;
       transform: translateX(-50%);
       width: min(100vw, 1536px);
-      height: 3200px;
+      height: 100%;
       pointer-events: none;
       overflow: visible;
       z-index: 0;
@@ -2105,22 +2388,21 @@
          SCROLL-DRIVEN PAPER AIRPLANE & FLIGHT TRAIL
          ══════════════════════════════════════════════════ -->
     <div class="plane-fly" id="plane-fly" aria-hidden="true">
-      <svg class="plane-trail-svg" id="plane-svg" viewBox="0 0 1536 3200" fill="none" preserveAspectRatio="none">
+      <svg class="plane-trail-svg" id="plane-svg" viewBox="0 0 1536 7600" fill="none" preserveAspectRatio="none">
         <defs>
-          <mask id="planeTrailMask" maskUnits="userSpaceOnUse" x="0" y="0" width="1536" height="3200">
+          <mask id="planeTrailMask" maskUnits="userSpaceOnUse" x="0" y="0" width="1536" height="7600">
             <path id="planeTrailMaskPath" fill="none" stroke="#FFFFFF" stroke-width="48" stroke-linecap="round"
-              style="stroke-dasharray: 8250; stroke-dashoffset: 8250;"
-              d="M 257.6 130.4 C 157.6 220.4 117.6 345.4 135.6 430.4 C 150.6 508.4 239.6 548.4 302.6 575.4 C 666.7 731.5 888.5 686.4 1265.0 809.7 C 1437.6 866.2 1445.8 1128.4 1218.0 1217.6 C 979.4 1311.0 833.7 1224.5 577.6 1233.3 C 397.3 1239.5 47.7 1394.5 172.1 1783.4 C 238.4 1910.4 481.0 2074.5 733.7 1906.1 C 1092.4 1667.2 1440.0 1710.5 1440.0 2038.1 C 1440.0 2370.0 1131.5 2424.7 873.1 2344.7 C 614.8 2264.8 334.3 2238.9 259.8 2523.2 C 180.7 2824.8 603.6 2969.2 847.1 2813.1 C 1090.6 2657.0 1430.7 2852.1 1293.2 3145.8">
+              d="M 257.6 130.4 C 157.6 220.4 117.6 345.4 135.6 430.4 C 150.6 508.4 239.6 548.4 302.6 575.4 C 666.7 731.5 888.5 686.4 1265.0 809.7 C 1437.6 866.2 1445.8 1128.4 1218.0 1217.6 C 979.4 1311.0 833.7 1224.5 577.6 1233.3 C 397.3 1239.5 47.7 1394.5 172.1 1783.4 C 238.4 1910.4 481.0 2074.5 733.7 1906.1 C 1092.4 1667.2 1440.0 1710.5 1440.0 2038.1 C 1440.0 2370.0 1131.5 2424.7 873.1 2344.7 C 614.8 2264.8 334.3 2238.9 259.8 2523.2 C 180.7 2824.8 603.6 2969.2 847.1 2813.1 C 1090.6 2657.0 1430.7 2852.1 1293.2 3145.8 C 1197 3351 880 3580 560 3540 C 280 3500 110 3680 160 3950 C 200 4180 560 4350 940 4220 C 1280 4100 1460 4280 1420 4580 C 1380 4860 1020 5000 680 4940 C 360 4880 130 5100 180 5420 C 230 5720 650 5840 1040 5680 C 1360 5540 1480 5800 1380 6100 C 1290 6380 960 6520 620 6440 C 320 6360 120 6580 200 6840 C 270 7060 680 7200 1080 7100 C 1420 7010 1460 7320 1260 7460 C 1080 7580 780 7590 540 7520">
             </path>
           </mask>
         </defs>
         <!-- Continuous invisible motion path -->
         <path id="planeMotionPath" fill="none" stroke="none"
-          d="M 257.6 130.4 C 157.6 220.4 117.6 345.4 135.6 430.4 C 150.6 508.4 239.6 548.4 302.6 575.4 C 666.7 731.5 888.5 686.4 1265.0 809.7 C 1437.6 866.2 1445.8 1128.4 1218.0 1217.6 C 979.4 1311.0 833.7 1224.5 577.6 1233.3 C 397.3 1239.5 47.7 1394.5 172.1 1783.4 C 238.4 1910.4 481.0 2074.5 733.7 1906.1 C 1092.4 1667.2 1440.0 1710.5 1440.0 2038.1 C 1440.0 2370.0 1131.5 2424.7 873.1 2344.7 C 614.8 2264.8 334.3 2238.9 259.8 2523.2 C 180.7 2824.8 603.6 2969.2 847.1 2813.1 C 1090.6 2657.0 1430.7 2852.1 1293.2 3145.8">
+          d="M 257.6 130.4 C 157.6 220.4 117.6 345.4 135.6 430.4 C 150.6 508.4 239.6 548.4 302.6 575.4 C 666.7 731.5 888.5 686.4 1265.0 809.7 C 1437.6 866.2 1445.8 1128.4 1218.0 1217.6 C 979.4 1311.0 833.7 1224.5 577.6 1233.3 C 397.3 1239.5 47.7 1394.5 172.1 1783.4 C 238.4 1910.4 481.0 2074.5 733.7 1906.1 C 1092.4 1667.2 1440.0 1710.5 1440.0 2038.1 C 1440.0 2370.0 1131.5 2424.7 873.1 2344.7 C 614.8 2264.8 334.3 2238.9 259.8 2523.2 C 180.7 2824.8 603.6 2969.2 847.1 2813.1 C 1090.6 2657.0 1430.7 2852.1 1293.2 3145.8 C 1197 3351 880 3580 560 3540 C 280 3500 110 3680 160 3950 C 200 4180 560 4350 940 4220 C 1280 4100 1460 4280 1420 4580 C 1380 4860 1020 5000 680 4940 C 360 4880 130 5100 180 5420 C 230 5720 650 5840 1040 5680 C 1360 5540 1480 5800 1380 6100 C 1290 6380 960 6520 620 6440 C 320 6360 120 6580 200 6840 C 270 7060 680 7200 1080 7100 C 1420 7010 1460 7320 1260 7460 C 1080 7580 780 7590 540 7520">
         </path>
         <!-- Visible dashed trail that gets unmasked as plane moves -->
         <path id="planeTrailPath" mask="url(#planeTrailMask)"
-          d="M 257.6 130.4 C 157.6 220.4 117.6 345.4 135.6 430.4 C 150.6 508.4 239.6 548.4 302.6 575.4 C 666.7 731.5 888.5 686.4 1265.0 809.7 C 1437.6 866.2 1445.8 1128.4 1218.0 1217.6 C 979.4 1311.0 833.7 1224.5 577.6 1233.3 C 397.3 1239.5 47.7 1394.5 172.1 1783.4 C 238.4 1910.4 481.0 2074.5 733.7 1906.1 C 1092.4 1667.2 1440.0 1710.5 1440.0 2038.1 C 1440.0 2370.0 1131.5 2424.7 873.1 2344.7 C 614.8 2264.8 334.3 2238.9 259.8 2523.2 C 180.7 2824.8 603.6 2969.2 847.1 2813.1 C 1090.6 2657.0 1430.7 2852.1 1293.2 3145.8">
+          d="M 257.6 130.4 C 157.6 220.4 117.6 345.4 135.6 430.4 C 150.6 508.4 239.6 548.4 302.6 575.4 C 666.7 731.5 888.5 686.4 1265.0 809.7 C 1437.6 866.2 1445.8 1128.4 1218.0 1217.6 C 979.4 1311.0 833.7 1224.5 577.6 1233.3 C 397.3 1239.5 47.7 1394.5 172.1 1783.4 C 238.4 1910.4 481.0 2074.5 733.7 1906.1 C 1092.4 1667.2 1440.0 1710.5 1440.0 2038.1 C 1440.0 2370.0 1131.5 2424.7 873.1 2344.7 C 614.8 2264.8 334.3 2238.9 259.8 2523.2 C 180.7 2824.8 603.6 2969.2 847.1 2813.1 C 1090.6 2657.0 1430.7 2852.1 1293.2 3145.8 C 1197 3351 880 3580 560 3540 C 280 3500 110 3680 160 3950 C 200 4180 560 4350 940 4220 C 1280 4100 1460 4280 1420 4580 C 1380 4860 1020 5000 680 4940 C 360 4880 130 5100 180 5420 C 230 5720 650 5840 1040 5680 C 1360 5540 1480 5800 1380 6100 C 1290 6380 960 6520 620 6440 C 320 6360 120 6580 200 6840 C 270 7060 680 7200 1080 7100 C 1420 7010 1460 7320 1260 7460 C 1080 7580 780 7590 540 7520">
         </path>
       </svg>
       <img class="plane-sprite" id="plane-sprite" src="./index_files/plane.svg" alt="Paper airplane">
@@ -2188,23 +2470,34 @@
     </section>
 
     <!-- ── 02. FLAGSHIP CASE STUDY: HATCHA + BEFORE/AFTER SLIDER ── -->
+    <!-- ── 02. FLAGSHIP CASE STUDY: HIMDRISHTI + BEFORE/AFTER SLIDER ── -->
     <section id="case-study" class="section-wrap">
       <div class="reveal">
         <div class="eyebrow"><span class="eyebrow-dot"></span>02 // Flagship Case Study</div>
-        <h2 class="section-title">Hatcha &mdash; <em>Generative UI Engine</em></h2>
+        <h2 class="section-title">HimDrishti &mdash; <em>Polar Navigation Decision Support</em></h2>
         <p class="section-subtitle">
-          An event planner that dynamically reconstructs its user interface around real-time context. Shipped at Google
-          I/O 2026.
+          An AI-driven decision support system for Antarctic sea-ice forecasting and iceberg trajectory prediction.
+          Built for Smart India Hackathon.
         </p>
       </div>
 
       <div class="case-card reveal delay-1" style="margin-top: 36px;">
         <div class="case-hero-banner"
           style="position:relative;height:380px;overflow:hidden;border-radius:20px 20px 0 0;">
-          <img src="./index_files/hero-plate.jpg" alt="Hatcha Generative UI Hero Showcase"
-            style="width:100%;height:100%;object-fit:cover;">
+          <img src="./index_files/himdrishti-polar-hero.jpg" alt="HimDrishti Antarctic Polar Navigation Showcase"
+            style="width:100%;height:100%;object-fit:cover;object-position:center 60%;">
           <div
             style="position:absolute;inset:0;background:linear-gradient(to top, var(--bg-base) 0%, transparent 60%);">
+          </div>
+
+          <!-- Floating Technical Badge Overlay -->
+          <div style="position:absolute;bottom:24px;left:24px;display:flex;gap:10px;flex-wrap:wrap;z-index:2;">
+            <span
+              style="background:rgba(15, 23, 42, 0.75);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.1);padding:6px 12px;border-radius:8px;font-size:12px;color:#fff;font-family:'Space Grotesk',sans-serif;">🔥
+              PyTorch &amp; Attention-LSTM</span>
+            <span
+              style="background:rgba(15, 23, 42, 0.75);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.1);padding:6px 12px;border-radius:8px;font-size:12px;color:#fff;font-family:'Space Grotesk',sans-serif;">⚡
+              FastAPI &amp; A* Pathfinding</span>
           </div>
         </div>
 
@@ -2214,22 +2507,51 @@
             <div>
               <div
                 style="font-size:14px;color:var(--flower);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">
-                Google I/O 2026 Innovation Track</div>
+                Smart India Hackathon 2026</div>
               <h3
                 style="font-family:'Playfair Display',serif;font-size:clamp(26px,3.5vw,38px);color:var(--text-primary);margin-top:4px;">
-                Stopping Static Flows. Composing Generative Interfaces.</h3>
+                Navigating Extreme Waters. Predicting Sea-Ice Dynamics.</h3>
             </div>
-            <button type="button" class="grow-btn" data-plant-word="Hatcha">Grow &ldquo;Hatcha&rdquo; in Garden
+            <button type="button" class="grow-btn" data-plant-word="HimDrishti">Grow &ldquo;HimDrishti&rdquo; in Garden
               &#8593;</button>
           </div>
 
           <p
             style="font-family:'Space Grotesk',sans-serif;font-size:14px;line-height:1.75;color:var(--text-secondary);max-width:820px;">
-            Traditional event apps suffer from combinatorial flow explosion: every new event type introduces divergent
-            forms and dead ends. With Hatcha, we architected a GenUI shell: a deterministic outer boundary that hosts
-            LLM-composed micro-widgets on the fly &mdash; adjusting theme palette, card density, and action priorities
-            dynamically.
+            Traditional maritime routing in polar regions relies on lagging meteorological reports and static ice-edge
+            approximations, increasing vessel collision risks. With HimDrishti, we engineered a full-stack decision
+            support platform combining XGBoost anomaly flags with Attention-LSTM time-series forecasting and real-time
+            A* pathfinding over FastAPI to deliver dynamic, collision-free transit corridors.
           </p>
+
+          <!-- Real-World Engineering Metrics Grid -->
+          <div
+            style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:16px;margin:28px 0;padding:20px;background:var(--bg-surface, rgba(255,255,255,0.03));border:1px solid var(--border-color, rgba(255,255,255,0.06));border-radius:14px;">
+            <div>
+              <div
+                style="font-family:'Playfair Display',serif;font-size:24px;color:var(--text-primary);font-weight:700;">
+                94.2%</div>
+              <div
+                style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-top:2px;">
+                Trajectory Prediction Accuracy</div>
+            </div>
+            <div>
+              <div
+                style="font-family:'Playfair Display',serif;font-size:24px;color:var(--text-primary);font-weight:700;">
+                &lt; 200ms</div>
+              <div
+                style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-top:2px;">
+                A* Route Re-computation</div>
+            </div>
+            <div>
+              <div
+                style="font-family:'Playfair Display',serif;font-size:24px;color:var(--text-primary);font-weight:700;">
+                Zero-Lag</div>
+              <div
+                style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-top:2px;">
+                Real-Time Telemetry Sync</div>
+            </div>
+          </div>
 
           <!-- Interactive Before / After Slider -->
           <div style="margin-top: 32px;">
@@ -2239,36 +2561,19 @@
             </div>
             <div class="compare-container" id="genui-slider">
               <!-- After (Background) -->
-              <img src="./index_files/after.png" class="compare-img" alt="GenUI Adaptive Interface (After)">
-              <div class="compare-badge after">🟢 GenUI Adaptive Shell</div>
+              <img src="./index_files/himdrishti-routing-architecture.png" class="compare-img" alt="HimDrishti Dynamic A* Corridor Optimization">
+              <div class="compare-badge after">🟢 Dynamic A* Route Corridor</div>
 
               <!-- Before (Foreground overlay) -->
               <div class="compare-overlay" id="compare-clip">
-                <img src="./index_files/before.png" alt="Static Rigid Forms (Before)">
+                <img src="./index_files/himdrishti-polar-layers.png" alt="Multi-Layer Polar Risk Environment">
               </div>
-              <div class="compare-badge before">🔴 Legacy Rigid Form</div>
+              <div class="compare-badge before">🔴 Environmental Risk Layers</div>
 
               <!-- Handle -->
               <div class="compare-handle" id="compare-knob">↔</div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- Partner Marquee -->
-      <div class="marquee-container reveal delay-2">
-        <div class="marquee-track">
-          <img src="./index_files/logo-google.svg" class="marquee-logo" alt="Google" loading="lazy">
-          <img src="./index_files/logo-existence.svg" class="marquee-logo" alt="Existence" loading="lazy">
-          <img src="./index_files/logo-pga.png" class="marquee-logo" alt="PGA" loading="lazy">
-          <img src="./index_files/logo-jumpable.png" class="marquee-logo" alt="Jumpable" loading="lazy">
-          <img src="./index_files/logo-vibes.png" class="marquee-logo" alt="Vibes" loading="lazy">
-          <!-- Duplicated for seamless loop -->
-          <img src="./index_files/logo-google.svg" class="marquee-logo" alt="Google" loading="lazy">
-          <img src="./index_files/logo-existence.svg" class="marquee-logo" alt="Existence" loading="lazy">
-          <img src="./index_files/logo-pga.png" class="marquee-logo" alt="PGA" loading="lazy">
-          <img src="./index_files/logo-jumpable.png" class="marquee-logo" alt="Jumpable" loading="lazy">
-          <img src="./index_files/logo-vibes.png" class="marquee-logo" alt="Vibes" loading="lazy">
         </div>
       </div>
     </section>
@@ -2412,33 +2717,60 @@
       </div>
 
       <div class="polaroid-grid reveal delay-1">
+        <!-- 01. IIT Delhi National Finalist -->
         <div class="polaroid-card">
           <div class="polaroid-tape"></div>
-          <img src="./index_files/about-photo-1.jpg" class="polaroid-photo" alt="Late night session" loading="lazy">
-          <div class="polaroid-caption">Late night SANKHYA logic</div>
-          <div class="polaroid-tag">SVKM Engineering &middot; 2 AM</div>
-        </div>
-
-        <div class="polaroid-card">
-          <div class="polaroid-tape"></div>
-          <img src="./index_files/about-photo-2.jpg" class="polaroid-photo" alt="IIT Delhi eRaksha Final"
-            loading="lazy">
+          <img src="./index_files/yug-iit-delhi.jpg" class="polaroid-photo" alt="Top 10 Finalist @ IIT Delhi eRaksha" loading="lazy">
           <div class="polaroid-caption">Top 10 Finalist @ IIT Delhi</div>
-          <div class="polaroid-tag">eRaksha 36h Sprint</div>
+          <div class="polaroid-tag">eRaksha 36h Sprint &middot; National Stage</div>
         </div>
 
+        <!-- 02. Best Speaker in Finance at BlackRock Debate -->
         <div class="polaroid-card">
           <div class="polaroid-tape"></div>
-          <img src="./index_files/about-photo-3.jpg" class="polaroid-photo" alt="Algorithms and chai" loading="lazy">
-          <div class="polaroid-caption">Code, chai &amp; cryosphere</div>
-          <div class="polaroid-tag">HimDrishti Lab</div>
+          <img src="./index_files/yug-blackrock-debate.jpg" class="polaroid-photo" alt="Yug Shah Best Speaker in Finance BlackRock" loading="lazy">
+          <div class="polaroid-caption">Best Speaker in Finance</div>
+          <div class="polaroid-tag">BlackRock Portfolio Defense &middot; ACE Senate</div>
         </div>
 
+        <!-- 03. President of SΔИKHYΔ Math Society -->
         <div class="polaroid-card">
           <div class="polaroid-tape"></div>
-          <img src="./index_files/about-photo-4.jpg" class="polaroid-photo" alt="Debating game theory" loading="lazy">
-          <div class="polaroid-caption">Debating Nash Equilibrium</div>
-          <div class="polaroid-tag">The Matrix &apos;26 Arena</div>
+          <img src="./index_files/yug-sankhya-president.jpg" class="polaroid-photo" alt="Yug Shah President of SANKHYA" loading="lazy">
+          <div class="polaroid-caption">President &middot; SΔИKHYΔ</div>
+          <div class="polaroid-tag">Official Math Society &middot; We Define The Curve</div>
+        </div>
+
+        <!-- 04. Leading The Matrix '26 Arena -->
+        <div class="polaroid-card">
+          <div class="polaroid-tape"></div>
+          <img src="./index_files/yug-matrix-presentation.jpg" class="polaroid-photo" alt="Yug Shah Presenting The Matrix Arena" loading="lazy">
+          <div class="polaroid-caption">The Matrix &apos;26 Arena</div>
+          <div class="polaroid-tag">600+ Builders Championship &middot; On Stage</div>
+        </div>
+
+        <!-- 05. Rapid Hackathon Prototyping -->
+        <div class="polaroid-card">
+          <div class="polaroid-tape"></div>
+          <img src="./index_files/yug-hackathon-prototype.jpg" class="polaroid-photo" alt="Late night hackathon build" loading="lazy">
+          <div class="polaroid-caption">Late night build &amp; logic</div>
+          <div class="polaroid-tag">Engineering Sprint &middot; Rapid Prototype</div>
+        </div>
+
+        <!-- 06. Life & Farm Reset -->
+        <div class="polaroid-card">
+          <div class="polaroid-tape"></div>
+          <img src="./index_files/yug-outdoors-goat.jpg" class="polaroid-photo" alt="Farm escape with a friend" loading="lazy">
+          <div class="polaroid-caption">Farm escape &amp; reset</div>
+          <div class="polaroid-tag">Beyond the terminal &middot; Gujarat</div>
+        </div>
+
+        <!-- 07. Deep Work & System Design -->
+        <div class="polaroid-card">
+          <div class="polaroid-tape"></div>
+          <img src="./index_files/yug-cafe-portrait.jpg" class="polaroid-photo" alt="Deep work & system design" loading="lazy">
+          <div class="polaroid-caption">Coffee &amp; neural notes</div>
+          <div class="polaroid-tag">Weekend builder mode</div>
         </div>
       </div>
     </section>
@@ -2575,6 +2907,37 @@
 
   <!-- ════ DOCKED / FLOATING UIVERSE.IO VINYL MUSIC PLAYER ════ -->
   <aside class="music-widget-fixed" id="music-widget" aria-label="Lo-fi Music Player">
+    <!-- Playlist & Up Next Queue Popup Panel -->
+    <div class="player-playlist-menu" id="player-playlist-menu" aria-label="Playlist &amp; Up Next Queue">
+      <div class="playlist-header">
+        <div class="playlist-header-title">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18V5l12-2v13"></path>
+            <circle cx="6" cy="18" r="3"></circle>
+            <circle cx="18" cy="16" r="3"></circle>
+          </svg>
+          <span>Playlist &amp; Queue</span>
+        </div>
+        <button type="button" class="playlist-close-btn" id="playlist-close-btn"
+          aria-label="Close Playlist">&times;</button>
+      </div>
+
+      <!-- Up Next Song Preview Card -->
+      <div class="playlist-upnext-card" id="playlist-upnext-card">
+        <span class="upnext-badge">&#9654; UP NEXT</span>
+        <div class="upnext-info">
+          <div class="upnext-title" id="upnext-title">double take</div>
+          <div class="upnext-artist" id="upnext-artist">dhruv</div>
+        </div>
+      </div>
+
+      <!-- Dynamic Tracklist -->
+      <div class="playlist-track-list" id="playlist-track-list">
+        <!-- Injected by JavaScript -->
+      </div>
+    </div>
+
     <!-- From Uiverse.io by hoshikawamaki (Adapted for Type Garden Dual Theme) -->
     <div class="player-uiverse-wrap">
       <!-- Peeking top vinyl: disappears when card expands on hover -->
@@ -2650,14 +3013,15 @@
 
         <!-- Buttons row -->
         <div class="player-controls-row">
-          <!-- Mode (Loop/Shuffle) -->
-          <div class="player-ctrl-btn" id="btn-player-mode" title="Toggle Loop Mode">
+          <!-- Shuffle Mode Button -->
+          <div class="player-ctrl-btn" id="btn-player-mode" title="Shuffle: OFF" aria-label="Toggle Shuffle Mode">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="17 1 21 5 17 9"></polyline>
-              <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
-              <polyline points="7 23 3 19 7 15"></polyline>
-              <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+              <polyline points="16 3 21 3 21 8"></polyline>
+              <line x1="4" y1="20" x2="21" y2="3"></line>
+              <polyline points="21 16 21 21 16 21"></polyline>
+              <line x1="15" y1="15" x2="21" y2="21"></line>
+              <line x1="4" y1="4" x2="9" y2="9"></line>
             </svg>
           </div>
 
@@ -2692,8 +3056,9 @@
             </svg>
           </div>
 
-          <!-- Tracklist / Sound mode -->
-          <div class="player-ctrl-btn" id="btn-player-sound" title="Sound Source: Audio File / Ambient Synth">
+          <!-- Tracklist / Playlist Menu Toggle -->
+          <div class="player-ctrl-btn" id="btn-player-sound" title="Playlist &amp; Up Next"
+            aria-label="Toggle Playlist and Queue">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <line x1="8" y1="6" x2="21" y2="6"></line>
@@ -2785,31 +3150,25 @@
       maskPath.style.strokeDasharray = motionLen;
       maskPath.style.strokeDashoffset = motionLen;
 
-      var ticking = false;
+      var VIRTUAL_HEIGHT = 7600;
+      var PLANE_OFFSET = -31;
 
-      function updatePlane() {
-        ticking = false;
-        var rect = flyZone.getBoundingClientRect();
-        var vh = window.innerHeight;
+      var targetProgress = 0;
+      var currentProgress = 0;
+      var isAnimating = false;
 
-        // Flight begins as user leaves the hero section and enters main:
-        var enterAt = vh * 0.75;
-        var totalTravel = rect.height; // 3200px flight span
-        var scrolled = enterAt - rect.top;
-        var progress = scrolled / totalTravel;
-        progress = Math.max(0, Math.min(1, progress));
-
+      function renderPlane(progress) {
         var d = progress * motionLen;
         var pt = motionPath.getPointAtLength(d);
 
-        var sampleDelta = 2;
+        var sampleDelta = 3;
         var pPrev = motionPath.getPointAtLength(Math.max(0, d - sampleDelta));
         var pNext = motionPath.getPointAtLength(Math.min(motionLen, d + sampleDelta));
 
         var w = flyZone.clientWidth;
         var h = flyZone.clientHeight;
         var scaleX = w / 1536;
-        var scaleY = h / 3200;
+        var scaleY = h / VIRTUAL_HEIGHT;
 
         var actualX = pt.x * scaleX;
         var actualY = pt.y * scaleY;
@@ -2817,32 +3176,67 @@
         var dy = (pNext.y - pPrev.y) * scaleY;
         var angle = Math.atan2(dy, dx) * 180 / Math.PI;
 
-        var PLANE_OFFSET = -31;
-        planeSprite.style.transform = 'translate(' + actualX.toFixed(1) + 'px, ' + actualY.toFixed(1) + 'px) translate(-50%, -50%) rotate(' + (angle + PLANE_OFFSET).toFixed(1) + 'deg)';
+        planeSprite.style.transform = 'translate3d(' + actualX.toFixed(1) + 'px, ' + actualY.toFixed(1) + 'px, 0) translate(-50%, -50%) rotate(' + (angle + PLANE_OFFSET).toFixed(1) + 'deg)';
 
         // Reveal the dotted trail exactly behind the paper plane:
-        maskPath.style.strokeDashoffset = (motionLen - d).toFixed(1);
+        maskPath.style.strokeDashoffset = Math.max(0, motionLen - d).toFixed(1);
 
-        // Opacity control: fade in upon entering main, fade out at end of flight path
-        if (progress <= 0.002) {
+        // Opacity control: smooth entry fade-in, persistent across main sections, graceful exit near footer
+        if (progress <= 0.003) {
           planeSprite.style.opacity = '0';
         } else if (progress >= 0.985) {
           planeSprite.style.opacity = Math.max(0, (1 - progress) * 65).toFixed(2);
         } else {
-          planeSprite.style.opacity = Math.min(1, progress * 16).toFixed(2);
+          planeSprite.style.opacity = Math.min(1, progress * 18).toFixed(2);
         }
       }
 
-      function onScroll() {
-        if (!ticking) {
-          requestAnimationFrame(updatePlane);
-          ticking = true;
+      function flightLoop() {
+        var diff = targetProgress - currentProgress;
+        // Calm, silky-smooth aerodynamic damping (lerp)
+        currentProgress += diff * 0.065;
+
+        if (Math.abs(diff) < 0.0001) {
+          currentProgress = targetProgress;
+        }
+
+        renderPlane(currentProgress);
+
+        if (Math.abs(targetProgress - currentProgress) >= 0.0001) {
+          requestAnimationFrame(flightLoop);
+        } else {
+          isAnimating = false;
         }
       }
 
-      window.addEventListener('scroll', onScroll, { passive: true });
-      window.addEventListener('resize', onScroll, { passive: true });
-      updatePlane();
+      function updateTarget() {
+        var rect = flyZone.getBoundingClientRect();
+        var vh = window.innerHeight;
+
+        // Flight begins as user leaves the hero section and enters main:
+        var enterAt = vh * 0.75;
+        // Span flight smoothly across the entire height of main through all sections:
+        var totalTravel = rect.height - vh * 0.4;
+        if (totalTravel <= 0) totalTravel = 1;
+
+        var scrolled = enterAt - rect.top;
+        var progress = scrolled / totalTravel;
+        targetProgress = Math.max(0, Math.min(1, progress));
+
+        if (!isAnimating) {
+          isAnimating = true;
+          requestAnimationFrame(flightLoop);
+        }
+      }
+
+      window.addEventListener('scroll', updateTarget, { passive: true });
+      window.addEventListener('resize', function() {
+        motionLen = motionPath.getTotalLength();
+        maskPath.style.strokeDasharray = motionLen;
+        updateTarget();
+      }, { passive: true });
+
+      updateTarget();
     }
 
     /* ══════════════════════════════════════════════════
@@ -2853,6 +3247,15 @@
       var clip = document.getElementById('compare-clip');
       var knob = document.getElementById('compare-knob');
       if (!container || !clip || !knob) return;
+
+      var overlayImg = clip.querySelector('img');
+      function syncWidth() {
+        if (overlayImg && container) {
+          overlayImg.style.width = container.clientWidth + 'px';
+        }
+      }
+      syncWidth();
+      window.addEventListener('resize', syncWidth);
 
       var isDown = false;
       function update(clientX) {
@@ -2936,29 +3339,35 @@
     }
 
     /* ══════════════════════════════════════════════════
-       6. LO-FI MUSIC PLAYER ENGINE & THUMBNAIL HANDLER
+       6. LO-FI MUSIC PLAYER ENGINE & PLAYLIST HANDLER
        ══════════════════════════════════════════════════ */
     var LoFiPlayer = (function () {
       var audioEl = new Audio();
       var isPlaying = false;
       var trackIndex = 0;
+      var isShuffle = false;
       var webAudioCtx = null;
       var synthInterval = null;
       var isWebAudioMode = false;
 
       var tracks = [
-        { title: 'Botanical Lo-Fi', artist: 'Type Garden Ambient', file: './audio/track.mp3', duration: 165 },
-        { title: 'Antarctic Drift', artist: 'HimDrishti Soundscape', file: './audio/himdrishti.mp3', duration: 180 },
-        { title: 'Cyber Midnight', artist: 'IIT Delhi eRaksha', file: './audio/cyberraksha.mp3', duration: 150 },
-        { title: 'Game Theory Chords', artist: 'SANKHYA The Matrix', file: './audio/sankhya.mp3', duration: 195 }
+        { title: 'Loverboy', artist: 'A-Wall', file: './audio/loverboy.mp3', duration: 112 },
+        { title: 'double take', artist: 'dhruv', file: './audio/double_take.mp3', duration: 170 },
+        { title: 'Earrings', artist: 'Malcolm Todd', file: './audio/earrings.mp3', duration: 152 },
+        { title: 'Man I Need', artist: 'Olivia Dean', file: './audio/man_i_need.mp3', duration: 184 },
+        { title: 'So Easy (To Fall In Love)', artist: 'Olivia Dean', file: './audio/so_easy.mp3', duration: 169 },
+        { title: 'The Less I Know The Better', artist: 'Tame Impala', file: './audio/the_less_i_know_the_better.mp3', duration: 218 }
       ];
 
       // DOM Elements
+      var musicWidget = document.getElementById('music-widget');
       var playBtn = document.getElementById('btn-player-play');
       var iconPlay = document.getElementById('icon-play');
       var iconPause = document.getElementById('icon-pause');
       var prevBtn = document.getElementById('btn-player-prev');
       var nextBtn = document.getElementById('btn-player-next');
+      var btnMode = document.getElementById('btn-player-mode');
+      var btnSound = document.getElementById('btn-player-sound');
       var seekSlider = document.getElementById('player-seek-slider');
       var curTimeEl = document.getElementById('player-cur-time');
       var durTimeEl = document.getElementById('player-dur-time');
@@ -2970,10 +3379,111 @@
       var vinylCard = document.getElementById('vinyl-card-svg');
       var thumbSlot = document.getElementById('player-thumb-slot');
 
+      // Playlist & Up Next DOM elements
+      var playlistMenu = document.getElementById('player-playlist-menu');
+      var playlistCloseBtn = document.getElementById('playlist-close-btn');
+      var playlistTrackList = document.getElementById('playlist-track-list');
+      var upnextTitle = document.getElementById('upnext-title');
+      var upnextArtist = document.getElementById('upnext-artist');
+
       function fmtTime(sec) {
+        if (!sec || isNaN(sec)) return '0:00';
         var m = Math.floor(sec / 60);
         var s = Math.floor(sec % 60);
         return m + ':' + (s < 10 ? '0' : '') + s;
+      }
+
+      function getNextIndex() {
+        if (isShuffle && tracks.length > 1) {
+          var nextIdx;
+          do {
+            nextIdx = Math.floor(Math.random() * tracks.length);
+          } while (nextIdx === trackIndex);
+          return nextIdx;
+        }
+        return (trackIndex + 1) % tracks.length;
+      }
+
+      function getPrevIndex() {
+        return (trackIndex - 1 + tracks.length) % tracks.length;
+      }
+
+      function updateUpNext() {
+        var nIdx = getNextIndex();
+        var nextTrack = tracks[nIdx];
+        if (upnextTitle) upnextTitle.textContent = nextTrack.title;
+        if (upnextArtist) upnextArtist.textContent = nextTrack.artist;
+      }
+
+      function renderPlaylist() {
+        if (!playlistTrackList) return;
+        playlistTrackList.innerHTML = '';
+        tracks.forEach(function (t, i) {
+          var item = document.createElement('div');
+          var isCurrent = (i === trackIndex);
+          item.className = 'playlist-item' + (isCurrent ? ' active' : '');
+          item.setAttribute('role', 'button');
+          item.setAttribute('tabindex', '0');
+
+          var numCol = isCurrent
+            ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>'
+            : (i + 1);
+
+          item.innerHTML =
+            '<div class="playlist-item-num">' + numCol + '</div>' +
+            '<div class="playlist-item-info">' +
+            '<div class="playlist-item-title">' + t.title + '</div>' +
+            '<div class="playlist-item-artist">' + t.artist + '</div>' +
+            '</div>' +
+            '<div class="playlist-item-dur">' + fmtTime(t.duration) + '</div>';
+
+          item.addEventListener('click', function () {
+            trackIndex = i;
+            fakeCur = 0;
+            playTrack();
+          });
+          playlistTrackList.appendChild(item);
+        });
+        updateUpNext();
+      }
+
+      function toggleShuffle() {
+        isShuffle = !isShuffle;
+        if (btnMode) {
+          if (isShuffle) {
+            btnMode.classList.add('active');
+            btnMode.setAttribute('title', 'Shuffle: ON');
+          } else {
+            btnMode.classList.remove('active');
+            btnMode.setAttribute('title', 'Shuffle: OFF');
+          }
+        }
+        updateUpNext();
+      }
+
+      function openPlaylistMenu() {
+        if (!playlistMenu) return;
+        renderPlaylist();
+        playlistMenu.classList.add('show');
+        if (btnSound) btnSound.classList.add('active');
+        if (musicWidget) musicWidget.classList.add('playlist-open');
+      }
+
+      function closePlaylistMenu() {
+        if (!playlistMenu) return;
+        playlistMenu.classList.remove('show');
+        if (btnSound) btnSound.classList.remove('active');
+        if (musicWidget) musicWidget.classList.remove('playlist-open');
+      }
+
+      function togglePlaylistMenu(e) {
+        if (e) e.stopPropagation();
+        if (!playlistMenu) return;
+        if (playlistMenu.classList.contains('show')) {
+          closePlaylistMenu();
+        } else {
+          openPlaylistMenu();
+        }
       }
 
       // Check custom thumbnail in audio folder
@@ -2981,14 +3491,11 @@
         var img = new Image();
         img.src = './audio/cover.jpg';
         img.onload = function () {
-          // Custom thumbnail found! Replace inner of thumbSlot
           if (thumbSlot) {
             thumbSlot.innerHTML = '<img src="./audio/cover.jpg" class="vinyl-spinning" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--border);display:block;"><div style="position:absolute;z-index:10;width:20px;height:20px;background:var(--bg-surface);border:3px solid var(--border);border-radius:50%;top:30px;left:30px;"></div>';
           }
         };
-        img.onerror = function () {
-          // No custom thumbnail -> default botanical celestial vinyl theme remains!
-        };
+        img.onerror = function () { };
       }
 
       // Web Audio Botanical Lo-Fi Ambient Synthesizer
@@ -3057,6 +3564,7 @@
         if (titleEl) titleEl.textContent = t.title;
         if (artistEl) artistEl.textContent = t.artist;
         if (durTimeEl) durTimeEl.textContent = fmtTime(t.duration);
+        updateUpNext();
       }
 
       function setPlayingState(playing) {
@@ -3078,9 +3586,9 @@
 
       function playTrack() {
         updateTrackMeta();
+        renderPlaylist();
         var t = tracks[trackIndex];
 
-        // Try HTML5 audio file
         audioEl.src = t.file;
         var playPromise = audioEl.play();
         if (playPromise !== undefined) {
@@ -3088,7 +3596,6 @@
             stopWebAudioSynth();
             setPlayingState(true);
           }).catch(function () {
-            // Audio file not present in audio/ -> fallback to Web Audio Ambient Synthesizer
             startWebAudioSynth();
             setPlayingState(true);
           });
@@ -3119,6 +3626,19 @@
         }
       });
 
+      audioEl.addEventListener('loadedmetadata', function () {
+        if (audioEl.duration && !isNaN(audioEl.duration) && isFinite(audioEl.duration)) {
+          if (durTimeEl) durTimeEl.textContent = fmtTime(audioEl.duration);
+        }
+      });
+
+      // Seamless Auto-play Next Song when Track Ends
+      audioEl.addEventListener('ended', function () {
+        trackIndex = getNextIndex();
+        fakeCur = 0;
+        playTrack();
+      });
+
       // Simulated progress when in synth mode
       var fakeCur = 0;
       setInterval(function () {
@@ -3142,24 +3662,34 @@
 
       if (nextBtn) {
         nextBtn.addEventListener('click', function () {
-          trackIndex = (trackIndex + 1) % tracks.length;
+          trackIndex = getNextIndex();
           fakeCur = 0;
           playTrack();
         });
       }
       if (prevBtn) {
         prevBtn.addEventListener('click', function () {
-          trackIndex = (trackIndex - 1 + tracks.length) % tracks.length;
+          trackIndex = getPrevIndex();
           fakeCur = 0;
           playTrack();
         });
       }
 
+      if (btnMode) btnMode.addEventListener('click', toggleShuffle);
+      if (btnSound) btnSound.addEventListener('click', togglePlaylistMenu);
+      if (playlistCloseBtn) playlistCloseBtn.addEventListener('click', closePlaylistMenu);
+
+      document.addEventListener('click', function (e) {
+        if (musicWidget && !musicWidget.contains(e.target)) {
+          closePlaylistMenu();
+        }
+      });
+
       return {
         init: function () {
           updateTrackMeta();
+          renderPlaylist();
           checkCustomThumbnail();
-          // Start in paused state
           setPlayingState(false);
         }
       };

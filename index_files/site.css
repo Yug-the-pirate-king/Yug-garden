@@ -1,0 +1,1931 @@
+/* ════════════════════════════════════════════════════════════════════
+   site.css — SHARED CHROME for every page (nav, day toggle, footer) +
+   the color-token system, base reset, and the .reveal utility.
+   Pair with js/site.js (defines <site-nav> / <site-footer>).
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── tokens + reset + base + NAV + day toggle ── */
+    /* ════ tokens (from brand guide / Figma) ════ */
+    /* ════ COLOR SYSTEM ════
+       Tier 1 — raw brand palette (mode-independent).
+       Tier 2 — semantic role tokens: LIGHT values here in :root, DARK values
+       redefined once in `body.night` (search "NIGHT THEME"). Themed CSS references
+       var(--role) so switching theme only re-points tokens. Decorative/art colors
+       (recorder UI, willow/meadow art, SVG mesh fills) stay as literals. */
+    :root {
+      /* — Tier 1: palette — */
+      --c-cream:       #fff9f1;   /* warm page cream */
+      --c-cream-2:     #fff9e9;   /* cream (nav / scrolled) */
+      --c-sand:        #eee8d2;   /* raised warm surface (testimonials/footer, light) */
+      --c-ink:         #060606;   /* near-black body ink */
+      --c-black:       #000000;
+      --c-white:       #ffffff;
+      --c-gold:        #ffda3f;
+      --c-coral:       #fc9073;
+      --c-night:       #0a0a0f;   /* dark page bg */
+      --c-navy:        #111c36;   /* raised surface (dark) */
+      --c-navy-1:      #1f3b6d;   /* hero night gradient start */
+      --c-navy-2:      #031835;   /* hero night gradient end */
+      --c-blue-start:  rgba(113,183,244,1);   /* hero day gradient */
+      --c-blue-end:    rgba(87,136,179,1);
+      --c-toggle-navy: #0c1b42;   /* toggle track (dark) */
+      --c-border-dark: #343434;   /* toggle border (dark) */
+
+      /* — legacy aliases (keep existing var() usages working) — */
+      --blue-start: var(--c-blue-start);
+      --blue-end:   var(--c-blue-end);
+      --cream:      var(--c-cream);
+      --cream-text: var(--c-cream-2);
+      --gold:       var(--c-gold);
+      --dark:       var(--c-ink);
+
+      /* — Tier 2: semantic role tokens (LIGHT) — */
+      --bg-base:        var(--c-cream);        /* page / dark sections / marquee fade */
+      --surface-raised: var(--c-sand);         /* testimonials, footer, crest */
+      --text-heading:   var(--c-black);        /* intro, featured heading, footer head/sub */
+      --text-title:     rgba(0,0,0,0.9);       /* testimonials heading */
+      --text-eyebrow:   rgba(0,0,0,0.5);       /* testimonials eyebrow */
+      --text-contrast:  var(--c-black);        /* nav-right label, tile-overlay text */
+      --nav-scrolled:   var(--c-ink);          /* nav sides once scrolled onto cream pill */
+      --overlay-scrim:  rgba(255,249,241,0.7); /* tile hover overlay bg */
+      --hero-from:      var(--c-blue-start);   /* hero + menu-overlay gradient stops */
+      --hero-to:        var(--c-blue-end);
+      --toggle-track:   var(--c-white);        /* white day button */
+      --toggle-border:  #e7dfcd;               /* soft neutral edge on the white button */
+      --toggle-knob:    var(--c-gold);
+      --focus-ring:     var(--c-ink);          /* toggle focus outline */
+      --trail-stroke:   var(--c-black);        /* paper-plane dotted trail */
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      scroll-behavior: smooth;
+      /* kill the rubber-band overscroll: without this, pulling down at the very
+         top lets the sticky hero slide below its origin and exposes the cream
+         projects section (higher z-index) behind it. */
+      overscroll-behavior-y: none;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg-base);
+      color: var(--dark);
+      overflow-x: hidden;
+      overscroll-behavior-y: none;
+    }
+
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-thumb { background: #5d8cb6; border-radius: 99px; }
+
+    img { display: block; }
+
+    /* visually-hidden text for screen readers and crawlers — takes no layout space */
+    .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* ════ NAV — Figma node 1:82 ════ */
+    #nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 60px 0;
+    }
+
+    .nav-side {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 140px;
+      font-size: 16px;
+      line-height: 1.358;
+      color: var(--cream-text);
+      transition: color 0.35s ease;
+    }
+    /* nav-side colour + pin filter are owned by the backdrop-contrast rules below
+       (#nav.nav-on-dark / .nav-on-light, set by initNavContrast) so they track the
+       actual backdrop rather than a scroll threshold. */
+
+    .nav-side.right {
+      justify-content: flex-end;
+      gap: 4px;
+      color: var(--text-contrast);
+      letter-spacing: -0.64px;
+    }
+
+    /* Back button — replaces "VANCOUVER, BC" on case-study routes; returns to the
+       home projects section (/#work). Colour is inherited from .nav-side, so it
+       follows the same backdrop-contrast rules as the rest of the nav. */
+    .nav-back {
+      display: none;                 /* shown only on case-study routes (below) */
+      align-items: center;
+      gap: 8px;
+      color: inherit;
+      text-decoration: none;
+      font-size: 16px;
+      line-height: 1.358;
+      padding: 6px 4px;
+      border-radius: 99px;
+      transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .nav-back-arrow { transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1); }
+    .nav-back:hover .nav-back-arrow { transform: translateX(-3px); }
+    .nav-back:active { transform: scale(0.96); opacity: 0.7; }
+    .nav-back:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+    /* on a case study: hide the location, show the back button */
+    body.route-hatcha    .nav-side .pin,
+    body.route-hatcha    .nav-side .nav-loc,
+    body.route-fireflut  .nav-side .pin,
+    body.route-fireflut  .nav-side .nav-loc,
+    body.route-existence .nav-side .pin,
+    body.route-existence .nav-side .nav-loc,
+    body.route-jumpable  .nav-side .pin,
+    body.route-jumpable  .nav-side .nav-loc { display: none; }
+    body.route-hatcha    .nav-back,
+    body.route-fireflut  .nav-back,
+    body.route-existence .nav-back,
+    body.route-jumpable  .nav-back { display: inline-flex; }
+
+    /* glass pill — bg white/20, border white/50 (node 111:1791) */
+    .nav-pill {
+      display: flex;
+      align-items: center;
+      gap: 60px;
+      padding: 0 8px;
+      height: 56px; /* fixed height — prevents growth during max-width animation */
+      max-width: 660px;
+      border-radius: 9999px;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.5);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      /* inner top highlight — white 25%, y4, blur6 */
+      box-shadow: inset 0 4px 6px rgba(255,255,255,0.25);
+      transition: gap 0.45s cubic-bezier(0.4,0,0.2,1);
+    }
+    .nav-pill.compact { gap: 10px; }
+
+    /* "Available for work" badge — hidden by default, shown when compact */
+    .avail-tag {
+      display: flex;
+      align-items: center;
+      max-width: 0;
+      opacity: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      /* negative margin cancels the phantom gap this hidden element adds between avatar and nav-links */
+      margin-left: -60px;
+      transition: max-width 0.45s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease 0.05s, margin-left 0.45s cubic-bezier(0.4,0,0.2,1);
+    }
+    .nav-pill.compact .avail-tag {
+      max-width: 220px;
+      opacity: 1;
+      margin-left: 0;
+    }
+    /* Dot is a sibling of .avail-tag (outside overflow:hidden) so the pulse ring renders freely */
+    .avail-dot {
+      position: relative;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #ffda3f;
+      flex-shrink: 0;
+      opacity: 0;
+      /* collapse both the flex gap before it AND its own width so non-compact layout is unaffected */
+      margin-left: -60px;
+      margin-right: -10px;
+      transition: opacity 0.25s ease 0.3s, margin-left 0.45s cubic-bezier(0.4,0,0.2,1), margin-right 0.45s cubic-bezier(0.4,0,0.2,1);
+    }
+    .nav-pill.compact .avail-dot {
+      opacity: 1;
+      margin-left: 0;
+      margin-right: 0;
+    }
+    .avail-dot::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 2px solid #ffda3f;
+      opacity: 0;
+      animation: avail-pulse 1.8s cubic-bezier(0.4,0,0.6,1) infinite;
+    }
+    @keyframes avail-pulse {
+      0%   { transform: scale(0.6); opacity: 0.8; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+    .avail-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      color: var(--dark);
+      font-weight: 400;
+      padding-right: 4px;
+    }
+    /* night: match the muted-white nav links over dark backgrounds */
+    body.night .avail-text { color: rgba(255,255,255,0.75); }
+
+    .nav-avatar {
+      display: block;                /* required now it's an <a> (home link) */
+      width: 40px; height: 40px;
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .nav-avatar:hover  { transform: scale(1.06); }
+    .nav-avatar:active { transform: scale(0.95); }
+    .nav-avatar:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: 3px;
+    }
+    .nav-avatar img {
+      position: absolute;
+      width: 100%; height: 149.98%;
+      top: -5.8%; left: 0;
+      object-fit: cover;
+    }
+
+    /* avatar + music-wave button share a tight 4px group (Figma node 594:6228) */
+    .nav-id {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    /* ── music wave button (Figma node 594:6206) ──
+       40px translucent disc with a sound-wave. Waves while music plays;
+       tap flattens it to a straight line + pauses the track (global control). */
+    .nav-wave {
+      width: 34px; height: 34px;      /* match the day/night toggle disc */
+      flex-shrink: 0;
+      padding: 0;
+      border-radius: 50%;
+      background: var(--toggle-track);          /* white (day) → navy (night), same tokens as the toggle */
+      border: 1px solid var(--toggle-border);
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.10);
+      overflow: hidden;
+      cursor: pointer;
+      color: var(--c-ink);           /* wave stroke — dark on the day disc, light in night (below) */
+      transition: background-color 0.35s ease, border-color 0.35s ease,
+                  box-shadow 0.35s ease, transform 0.2s ease;
+    }
+    .nav-wave:hover  { transform: scale(1.06); }
+    .nav-wave:active { transform: scale(0.94); }
+    .nav-wave:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
+    .nav-wave-svg { display: block; width: 100%; height: 100%; }
+    .nav-wave-bg  { display: none; }   /* the button itself carries the disc now */
+
+    .nav-wave-path {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.3;
+      stroke-linecap: round;
+      /* keep the 1.3px stroke thickness even as scaleY collapses the geometry —
+         without this the flat-line stroke gets squashed to ~0.03px and vanishes */
+      vector-effect: non-scaling-stroke;
+      transform-box: view-box;
+      transform-origin: 20px 20px;
+      transform: scaleY(0.02);       /* resting state = flat line (music off) */
+      transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+    .nav-wave.playing .nav-wave-path { transform: scaleY(1); }
+
+    /* the wave travels left one full period, seamlessly, only while playing */
+    .nav-wave-travel {
+      transform-box: view-box;
+      animation: nav-wave-travel 1.15s linear infinite;
+      animation-play-state: paused;
+    }
+    .nav-wave.playing .nav-wave-travel { animation-play-state: running; }
+    @keyframes nav-wave-travel {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-20px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .nav-wave-travel { animation: none; }
+    }
+    body.night .nav-wave { color: rgba(255,255,255,0.75); }
+
+    /* nav-links wrapper — collapses when pill is compact */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      /* visible so the CTA hover (scale + shadow) isn't clipped at the right edge;
+         the pill keeps overflow:hidden so the collapse still reads clean */
+      overflow: visible;
+      max-width: 680px;
+      flex-shrink: 0;
+      opacity: 1;
+      transition: max-width 0.45s cubic-bezier(0.4,0,0.2,1), opacity 0.2s ease;
+    }
+    .nav-pill.compact .nav-links {
+      max-width: 0;
+      opacity: 0;
+      overflow: hidden;   /* clip content while collapsing */
+    }
+
+    /* nav-link hover/selected states — Figma node 111:1796: border 1px #959595, radius 999px */
+    .nav-link {
+      padding: 8px 10px;
+      font-size: 16px;
+      color: var(--dark);
+      text-decoration: none;
+      border-radius: 99px;
+      border: 1px solid transparent; /* reserve space so border doesn't shift layout */
+      transition: border-color 0.18s ease;
+      white-space: nowrap;
+    }
+    .nav-link:hover,
+    .nav-link.active { border-color: #000; }          /* light mode: black outline */
+    .nav-link:focus-visible { outline: 2px solid var(--dark); outline-offset: 2px; }
+    .nav-link:active { opacity: 0.65; }
+    /* night: the pill sits over dark backgrounds, so the links read as muted white
+       and the hover/selected outline flips to white */
+    body.night .nav-link { color: rgba(255,255,255,0.75); }
+    body.night .nav-link:hover,
+    body.night .nav-link.active { border-color: #fff; }
+
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 16px;
+      color: black;
+      text-decoration: none;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s;
+    }
+    /* tight, brand-blue tinted lift (negative spread keeps it from clipping the pill) */
+    .nav-cta:hover { transform: scale(1.03); box-shadow: 0 4px 12px -4px rgba(30,58,95,0.4); }
+    .nav-cta:active { transform: scale(0.97); }
+    .nav-cta:focus-visible { outline: 2px solid var(--dark); outline-offset: 2px; }
+
+    /* day/night switch — rebuilt from imgFrame20.svg (day: white track, #FFDA3F ring
+       + knob, inset gold glow) and night node 256:1925 (track #0c1b42, border #343434,
+       white knob at x27). Knob slides on transform only. */
+    /* single round celestial button — no sliding knob. One click swaps the theme
+       and the sun/moon slide vertically inside the clipped circle: the sun sets out
+       the bottom while the moon rises in from the top (and the reverse for day). */
+    .day-toggle {
+      position: relative;
+      width: 34px; height: 34px;
+      padding: 0;
+      border-radius: 50%;
+      background: var(--toggle-track);
+      border: 1px solid var(--toggle-border);
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.10);
+      cursor: pointer;
+      overflow: hidden;                 /* clip the off-screen icon */
+      transition: background-color 0.35s ease, border-color 0.35s ease,
+                  box-shadow 0.35s ease, transform 0.2s ease;
+    }
+    .toggle-ico {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 20px; height: 20px;
+      /* spring-eased vertical travel; the transform below sets each icon's park spot */
+      transition: transform 0.5s cubic-bezier(0.34,1.4,0.5,1);
+      will-change: transform;
+    }
+    /* DAY: sun centered, moon parked above the top edge (clipped) */
+    .ico-sun  { color: #f5a623; width: 22px; height: 22px; transform: translate(-50%, -50%); }
+    .ico-moon { color: #f2ead6; transform: translate(-50%, -220%); }
+    /* NIGHT: sun dropped out the bottom (clipped), moon centered */
+    body.night .ico-sun  { transform: translate(-50%, 120%); }
+    body.night .ico-moon { transform: translate(-50%, -50%); }
+    .day-toggle:hover  { transform: scale(1.06); }
+    .day-toggle:active { transform: scale(0.94); }
+    .day-toggle:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 3px; }
+
+    /* ════ NAV backdrop-contrast (set by initNavContrast in site.js) ════
+       These win over the theme (.night) and .scrolled colour rules above so the
+       nav text tracks the LUMINANCE painted behind the bar, not the mode:
+       .nav-on-dark → light text over a dark backdrop, .nav-on-light → dark text
+       over a light one. Covers the left location label, the pill links, and the
+       DAY/NIGHT toggle label. */
+    #nav.nav-on-dark  .nav-side,
+    #nav.nav-on-dark  .nav-side.right,
+    #nav.nav-on-dark  #theme-label,
+    #nav.nav-on-dark  .avail-text,
+    #nav.nav-on-dark  .nav-back,
+    #nav.nav-on-dark  .nav-burger,
+    #nav.nav-on-dark  .nav-link { color: var(--c-cream-2); }
+    #nav.nav-on-light .nav-side,
+    #nav.nav-on-light .nav-side.right,
+    #nav.nav-on-light #theme-label,
+    #nav.nav-on-light .avail-text,
+    #nav.nav-on-light .nav-back,
+    #nav.nav-on-light .nav-burger,
+    #nav.nav-on-light .nav-link { color: var(--c-ink); }
+    /* location-pin SVG: dark on light backdrops, light on dark ones */
+    #nav.nav-on-light .nav-side .pin { filter: brightness(0); }
+    #nav.nav-on-dark  .nav-side .pin { filter: brightness(0) invert(1); }
+    /* hover/selected outline on the pill links follows the same contrast */
+    #nav.nav-on-dark  .nav-link:hover,
+    #nav.nav-on-dark  .nav-link.active { border-color: #fff; }
+    #nav.nav-on-light .nav-link:hover,
+    #nav.nav-on-light .nav-link.active { border-color: #000; }
+
+    /* ════ MENU-OPEN state ════
+       The burger itself is the close control (it morphs to an X), so lift the nav
+       above the overlay, fade out the email + theme buttons, and tint the X to the
+       overlay's cream text. Set by initMenu → #nav.menu-open. */
+    #nav.menu-open { z-index: 400; }
+    #nav.menu-open .nav-cta,
+    #nav.menu-open .nav-side.right {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    /* the overlay is a child of #nav (z-index 300), so lift the burger above it
+       to keep the X visible + clickable as the close control. */
+    #nav.menu-open .nav-burger { color: var(--cream-text); z-index: 301; }
+
+/* ── FOOTER + interactive garden ── */
+    /* ════ FOOTER — node 128:4842 (1440×938 canvas) ════ */
+    .footer {
+      position: relative;
+      z-index: 12;                 /* paints its wavy grass over testimonials above */
+      height: 938px;
+      background: var(--surface-raised);   /* footer cream (node 128:4842) — matches the wavy crest fill */
+      /* MUST stay overflow:visible. The footer is the layer that SCROLLS during the
+         mobile pin, and iOS Safari clips a scrolling layer's overflow-x:clip on BOTH
+         axes each frame — that cut the crest's upward poke to a straight line AND
+         opened a sub-pixel seam where the pinned blue hero peeked through. The land is
+         the only thing that bleeds sideways, so it's clipped in its own .ft-land-clip
+         wrapper instead of here (keeps the page from scrolling horizontally). */
+      overflow: visible;
+    }
+
+    /* clips ONLY the land's horizontal bleed, so .footer can stay overflow:visible.
+       Not a scrolling layer itself, so iOS clips it fine; it has no vertical poke to
+       lose. Mirrors the land's old z-index:3 so crest (z1) still shows above it. */
+    .ft-land-clip {
+      position: absolute;
+      inset: 0;
+      overflow-x: clip;
+      overflow-y: visible;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    /* wavy grass crest — node 128:5055 (exact vector). The cream shape (#eee8d2,
+       same as the footer body) has a wavy TOP edge and fills solid below it; lifted
+       so the whole crest sits above the footer's top edge, the green section shows
+       above the wave and the cream connects seamlessly into the footer body.
+       z-index:1 keeps it under the noise overlay for consistent texture.
+
+       Built as a solid cream BLOCK whose top edge is carved by the wave SVG used as a
+       MASK — not an inline <svg preserveAspectRatio="none"> element. iOS Safari
+       mis-rasterises a squashed preserveAspectRatio=none SVG element while the footer
+       is a GPU-composited pinned/scrolled layer, collapsing the crest to a straight
+       line ("straight plane"). A mask on a plain block is on the same reliable path as
+       the affiliate/about crest, so it stays wavy through the scroll. The mask fill is
+       irrelevant (alpha only); the cream/navy colour comes from --surface-raised, which
+       flips with the theme — replacing the old per-theme path fill. */
+    .ft-wavy {
+      position: absolute;
+      top: -6.6vw;                 /* lift the deepest trough just above the footer top edge */
+      left: 0;
+      width: 100%;
+      height: 13.75vw;             /* = 100vw * 198/1440 — matches the old svg's intrinsic ratio */
+      z-index: 1;
+      pointer-events: none;
+      background: var(--surface-raised);
+      -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%201440%20198'%20preserveAspectRatio='none'%3E%3Cpath%20fill='%23fff'%20d='M0%204.15182L46.4%2023.4471C91.2%2042.7424%20175.3%2094.0468%20266.5%2074.7515C359.3%2055.4562%20446.5%2033.4304%20548.8%2033.4304C651.1%2033.4304%20731.2%2068.4695%20822.4%2094.1965C913.6%20119.924%201006.4%2065.6287%201097.6%2065.6287C1188.8%2065.6287%201280%20119.924%201371.2%2087.7648C1462.4%2055.6059%201553.6%2029.8789%201646.4%2010.5836C1739.2%20-8.71166%201828.8%20-1.41153%201873.6%2030.7473L1920%2057.5792V197.105H0V4.15182Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+      mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%201440%20198'%20preserveAspectRatio='none'%3E%3Cpath%20fill='%23fff'%20d='M0%204.15182L46.4%2023.4471C91.2%2042.7424%20175.3%2094.0468%20266.5%2074.7515C359.3%2055.4562%20446.5%2033.4304%20548.8%2033.4304C651.1%2033.4304%20731.2%2068.4695%20822.4%2094.1965C913.6%20119.924%201006.4%2065.6287%201097.6%2065.6287C1188.8%2065.6287%201280%20119.924%201371.2%2087.7648C1462.4%2055.6059%201553.6%2029.8789%201646.4%2010.5836C1739.2%20-8.71166%201828.8%20-1.41153%201873.6%2030.7473L1920%2057.5792V197.105H0V4.15182Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+    }
+
+    /* land / meadow — exported group 128:4846 (back-ridge ~y735, flush to base) */
+    .ft-land {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100vw;                /* stretch edge-to-edge on any viewport width */
+      height: 221px;               /* ~+9px over native to lift ridge to ref */
+      z-index: 3;
+      pointer-events: none;
+      -webkit-user-select: none; user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    /* sub + head as one group, centred in the viewport height then nudged up a
+       little. Its centre sits (50vh + 48px) above the footer's bottom edge, so
+       when the page rests at its end (footer bottom flush with the viewport
+       bottom) the text lands just above the vertical middle — clear of the land
+       + garden below, with comfortable breathing room even on short 13" screens. */
+    .ft-inner {
+      position: absolute;
+      left: 50%;
+      bottom: calc(50vh + 48px);
+      transform: translate(-50%, 50%);
+      width: 1440px;
+      height: auto;
+      z-index: 4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 64px;
+      text-align: center;
+    }
+    /* short desktop viewports (≈MacBook 13" and smaller) — the garden plants
+       grow well above the land ridge, so lift the group further to keep the
+       headline clear of them. Taller screens keep the gentler +48px. */
+    @media (min-width: 1101px) and (max-height: 860px) {
+      .ft-inner { bottom: calc(50vh + 112px); }
+    }
+    @media (min-width: 1101px) and (max-height: 740px) {
+      .ft-inner { bottom: calc(50vh + 140px); }
+    }
+
+    /* subtitle — node 128:4845 (Inter Light 24px, centred) */
+    .ft-sub {
+      position: static;            /* flex-flow item inside .ft-inner (centred group) */
+      margin-inline: auto;         /* centre without a transform, so the .reveal
+                                      transform doesn't clobber the horizontal centring */
+      max-width: 809.849px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 24px;
+      line-height: 1.358;
+      letter-spacing: -0.96px;
+      text-align: center;
+      color: var(--text-heading);
+      word-break: break-word;
+    }
+
+    /* headline — node 128:4844 (DM Serif Display 172px, cap-trimmed box) */
+    .ft-head {
+      position: static;            /* flex-flow item inside .ft-inner (centred group) */
+      font-family: 'DM Serif Display', serif;
+      font-weight: 400;
+      /* One line at every width. The headline sets its own size off the viewport
+         rather than a fixed 172px: at ~10.1x the font-size in width, this string
+         would need 1737px to sit on one line at the old size.
+         The ramp is deliberately not a flat vw. A single percentage that reads
+         well on a phone (~83% of the width) becomes a wall of type on a desktop,
+         where the eye has to travel the whole line. This interpolates instead:
+         ~83% of the width at 390px down to ~64% at 1440px, then caps so it stops
+         growing on very wide displays. The third term is a floor for the other
+         direction: the ramp's fixed 10px is a growing share of a shrinking
+         screen, so below ~390px it would creep into the 20px gutter. Tracking
+         moves from -6.88px to its em equivalent so it scales with the size. */
+      font-size: min(110px, calc(10px + 5.7vw), 8.2vw);
+      line-height: normal;
+      letter-spacing: -0.04em;
+      /* the tight display tracking pulls the spaces in along with the letters,
+         which runs a five-word line together. Open the word gaps back up on
+         their own so the phrase reads as words, not one long string. In em so
+         it tracks the size ramp above. */
+      word-spacing: 0.08em;
+      color: var(--text-heading);
+      white-space: nowrap;
+      text-box-trim: trim-both;     /* Figma trim-both: top = cap height */
+      text-box-edge: cap alphabetic;
+      /* scroll-scrubbed grow: scales uniformly from a single centred point (0 → full)
+         as the footer enters. --ft-grow (0→1) is driven from JS on scroll. */
+      transform: scale(var(--ft-grow, 0));
+      transform-origin: center;
+      will-change: transform;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ft-head { transform: none; }
+    }
+
+    /* bottom bar — credit (node 128:5046) + social links (node 128:5047) */
+    .ft-credit {
+      position: absolute;
+      top: 893px;
+      left: 18.31px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 1.358;
+      letter-spacing: -0.64px;
+      color: #fff;
+      white-space: nowrap;
+      z-index: 5;
+    }
+
+    .ft-social {
+      position: absolute;
+      top: 886px;
+      right: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      z-index: 5;
+    }
+    .ft-social a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: normal;
+      color: #fff;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color 0.3s ease, transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .ft-social a.is-active { font-weight: 500; color: #fc9073; }
+    .ft-social a:hover { color: #fc9073; transform: translateY(-1px); }
+    .ft-social a:active { transform: translateY(0) scale(0.97); }
+    .ft-social a:focus-visible {
+      outline: 2px solid #fc9073;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    /* ════ INTERACTIVE GARDEN — plants grow from the soil; watering-can cursor ════ */
+    .ft-garden {
+      position: absolute;
+      inset: 0;                    /* full footer; each plant is rooted on the land ridge */
+      z-index: 3;                  /* in front of the land (also z3, earlier in DOM) */
+      pointer-events: none;
+      /* the footer is overflow:visible now (so the crest can poke on iOS), so clip the
+         edge plants here — they used to be clipped by the footer's own overflow */
+      overflow-x: clip;
+      overflow-y: visible;
+    }
+    .footer.garden-live { cursor: none; }   /* replaced by the watering can */
+
+    .plant {
+      position: absolute;
+      bottom: 0;
+      transform: translateX(-50%) scale(var(--g, 0.6));
+      transform-origin: bottom center;
+      transition: transform 1.15s cubic-bezier(0.22, 1, 0.36, 1);
+      /* no will-change: the growth transition only runs when a plant is watered, but
+         the declaration kept all ~20 of them on their own composited layers for the
+         whole session. The .sway child below animates continuously and gets its own
+         layer anyway — that's the one that actually needs it. */
+    }
+    .plant svg { display: block; overflow: visible; }
+    /* gentle idle sway on a wrapper div, per-plant amplitude/period via custom props */
+    .plant .sway {
+      transform-origin: bottom center;
+      animation: ft-sway var(--sway, 5s) ease-in-out infinite alternate;
+    }
+    /* ambient sections park their infinite animations while off-screen — an IO in
+       index.html toggles .anim-idle on the footer, the logo marquee and the
+       testimonials so ~23 permanently-running animations stop costing frames
+       they can't be seen in */
+    .anim-idle, .anim-idle * {
+      animation-play-state: paused !important;
+      animation-delay: var(--sway-d, 0s);
+    }
+    @keyframes ft-sway {
+      from { transform: rotate(calc(var(--swayA, 3deg) * -1)); }
+      to   { transform: rotate(var(--swayA, 3deg)); }
+    }
+    /* bloom pulse — retriggered by toggling .bloomed */
+    .plant .head { transform-box: fill-box; transform-origin: center; }
+    .plant.bloomed .head { animation: ft-bloom 0.7s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    @keyframes ft-bloom {
+      0% { transform: scale(0.92); }
+      45% { transform: scale(1.22); }
+      100% { transform: scale(1); }
+    }
+
+    /* watering-can cursor (built in JS, follows the pointer) */
+    .ft-cursor {
+      position: fixed;
+      left: 0; top: 0;
+      z-index: 41;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.18s ease;
+      filter: drop-shadow(0 3px 5px rgba(40, 60, 40, 0.28));
+    }
+    .ft-cursor.on { opacity: 1; }
+
+    /* "click to grow" hint — rides alongside the watering can while the pointer is
+       actually within reach of a plant, so it only ever promises what a click will
+       do. Text only, no plate behind it: the meadow art it sits over ranges from
+       pale sky to near-black soil, so legibility comes from a tight shadow halo
+       rather than a background chip. */
+    .ft-tip {
+      position: fixed;
+      left: 0; top: 0;
+      z-index: 42;                 /* just above the can */
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.18s ease;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 500;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      color: var(--text-heading);
+      /* halo is the footer's own ground colour, so it reads as the label lifting
+         off whichever surface it happens to be over — and it follows the theme,
+         since --surface-raised flips with night mode just like --text-heading. */
+      text-shadow:
+        0 0 3px var(--surface-raised),
+        0 0 7px var(--surface-raised),
+        0 0 12px var(--surface-raised);
+    }
+    .ft-tip.on { opacity: 1; }
+    .ft-cursor .tip-spray circle { animation: ft-mist 0.9s ease-out infinite; }
+    @keyframes ft-mist {
+      0% { opacity: 0.9; transform: translate(0, 0); }
+      100% { opacity: 0; transform: translate(var(--mx, 3px), var(--my, 10px)); }
+    }
+
+    /* water droplets (created in JS, positioned in footer coords) */
+    .ft-fx { position: absolute; inset: 0; z-index: 6; pointer-events: none; overflow: hidden; }
+    .ft-drop {
+      position: absolute;
+      top: 0; left: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 28%, #cdeeff 0%, #6cc2ee 55%, #3f9fd6 100%);
+      box-shadow: 0 0 4px rgba(80, 180, 230, 0.5);
+      will-change: transform, opacity;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .plant .sway { animation: none; }
+      .plant { transition: none; }
+      .ft-cursor .tip-spray circle { animation: none; }
+    }
+
+/* ── mobile burger + menu overlay ── */
+    /* ════ MOBILE MENU OVERLAY ════ */
+    /* two-bar mark that folds into an X on open (Pinterest "Menu Transition" ref).
+       Bars are absolutely centred on the button so they collapse to the exact
+       centre and cross into a clean, symmetric X — then reverse on close. */
+    .nav-burger {
+      display: none;
+      position: relative;
+      width: 36px; height: 36px;
+      padding: 0;
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-radius: 50%;
+      color: var(--dark);   /* bar colour; tracked by the backdrop-contrast rules */
+      transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .nav-burger span {
+      position: absolute;
+      left: 50%; top: 50%;
+      width: 20px; height: 2px;
+      margin: -1px 0 0 -10px;         /* centre the bar on the button */
+      background: currentColor;
+      border-radius: 2px;
+      /* swing eased in, decisive out — matches the reference's confident fold */
+      transition: transform 0.5s cubic-bezier(0.68,-0.25,0.27,1.25);
+    }
+    .nav-burger span:nth-child(1) { transform: translateY(-4px); }
+    .nav-burger span:nth-child(2) { transform: translateY(4px); }
+    .nav-burger:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+    .nav-burger:active { transform: scale(0.92); }
+    /* open → both bars slide to centre and rotate into a crossed X */
+    .nav-burger[aria-expanded="true"] span:nth-child(1) { transform: translateY(0) rotate(45deg); }
+    .nav-burger[aria-expanded="true"] span:nth-child(2) { transform: translateY(0) rotate(-45deg); }
+
+    .menu-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 48px 32px;
+      background: radial-gradient(ellipse 900px 1200px at 70% 20%, var(--hero-from) 0%, var(--hero-to) 100%);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+    .menu-overlay::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("../assets/imgNoiseTexture.png");
+      background-size: 1024px 1024px;
+      opacity: 0.08;
+      pointer-events: none;
+    }
+    .menu-overlay.open { opacity: 1; pointer-events: auto; }
+
+    /* the burger morphs into the X close control, so this standalone button is
+       retired (kept in the DOM as a no-op focus fallback but never shown). */
+    .menu-close { display: none; }
+    .menu-close.legacy-show {
+      position: absolute;
+      top: 22px; right: 22px;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.5);
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(12px);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .menu-close:hover { transform: scale(1.08); }
+    .menu-close:active { transform: scale(0.92); }
+    .menu-close:focus-visible { outline: 2px solid white; outline-offset: 2px; }
+    .menu-close::before, .menu-close::after {
+      content: '';
+      position: absolute;
+      width: 18px; height: 2px;
+      background: white;
+      border-radius: 2px;
+    }
+    .menu-close::before { transform: rotate(45deg); }
+    .menu-close::after  { transform: rotate(-45deg); }
+
+    .menu-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .menu-link {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      text-decoration: none;
+      padding: 8px 0;
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.22,1,0.36,1);
+    }
+    .menu-overlay.open .menu-link { opacity: 1; transform: translateY(0); }
+    .menu-overlay.open .menu-links li:nth-child(1) .menu-link { transition-delay: 0.08s; }
+    .menu-overlay.open .menu-links li:nth-child(2) .menu-link { transition-delay: 0.16s; }
+    .menu-overlay.open .menu-links li:nth-child(3) .menu-link { transition-delay: 0.24s; }
+
+    .menu-link .num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 1.4px;
+      color: rgba(255,255,255,0.55);
+    }
+    .menu-link .word {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(44px, 13vw, 64px);
+      color: var(--cream-text);
+      letter-spacing: 0.5px;
+      line-height: 1.1;
+    }
+    .menu-link:hover .word { text-decoration: underline 2px; text-underline-offset: 8px; }
+    .menu-link:focus-visible { outline: 2px solid white; outline-offset: 4px; border-radius: 4px; }
+    .menu-link:active .word { opacity: 0.7; }
+
+    .menu-footer {
+      position: absolute;
+      bottom: 40px; left: 32px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 1.4px;
+      color: rgba(255,255,255,0.6);
+    }
+
+
+/* ── reveal-on-scroll utility (used by footer + pages) ── */
+    /* ── scroll-triggered text reveal ──
+       Text starts nudged down + transparent; JS adds .is-visible when the
+       element scrolls into view (once). Only opacity/transform animate.
+       --reveal-delay lets siblings stagger. */
+    .reveal {
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity 0.85s cubic-bezier(0.22, 0.61, 0.36, 1),
+                  transform 0.85s cubic-bezier(0.22, 0.61, 0.36, 1);
+      transition-delay: var(--reveal-delay, 0s);
+      /* no will-change: this reveal plays once — the browser composites a running
+         transition on its own, and a static hint kept every revealed element on
+         its own layer for the whole session (same reasoning as .tw-line) */
+    }
+    .reveal.is-visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+    }
+
+/* ── CONTACT DRAWER — slides in from [data-contact-open] (nav CTA / footer headline) ── */
+    .contact-scrim {
+      position: fixed;
+      inset: 0;
+      z-index: 400;
+      background: rgba(6,6,6,0.45);
+      -webkit-backdrop-filter: blur(3px);
+      backdrop-filter: blur(3px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .contact-scrim.open { opacity: 1; pointer-events: auto; }
+
+    .contact-drawer {
+      /* spacing scale for the drawer. The panel reads as three stacked blocks —
+         header, field group, send — so the block gap has to stay clearly larger
+         than the in-group field gap; when they were 32 vs 24 nothing grouped and
+         the whole thing read as one undifferentiated stack of rows. */
+      --cd-gap-tight: 10px;   /* label → its own input */
+      --cd-gap-field: 30px;   /* field → field, inside the group */
+      --cd-gap-block: 44px;   /* block → block */
+      /* ONE side gutter for the body, the alt strip and the close button. The
+         close used to carry its own smaller margin, so the X sat half as far in
+         as everything under it and read as if the panel had lost its right pad. */
+      --cd-pad-x: 48px;
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      z-index: 401;
+      width: min(560px, 100%);
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-base);
+      /* layered, blue-tinted lift off the scrim (matches the nav CTA shadow family) */
+      box-shadow: -32px 0 64px -32px rgba(30,58,95,0.45),
+                  -8px 0 24px -16px rgba(6,6,6,0.25);
+      transform: translateX(103%);
+      visibility: hidden;
+      transition: transform 0.55s cubic-bezier(0.22,1,0.36,1), visibility 0s linear 0.55s;
+      overflow-y: auto;
+      /* the drawer always scrolls, and a classic scrollbar eats its width out of
+         the RIGHT gutter only — reserving it on both edges keeps the column
+         optically centred. No-op where scrollbars overlay (iOS) or the property
+         is unsupported, which is exactly the old behaviour. */
+      scrollbar-gutter: stable both-edges;
+      overscroll-behavior: contain;
+    }
+    .contact-drawer.open {
+      transform: none;
+      visibility: visible;
+      transition: transform 0.55s cubic-bezier(0.22,1,0.36,1);
+    }
+
+    .cd-close {
+      position: sticky;
+      top: 20px;
+      align-self: flex-end;
+      margin: 20px var(--cd-pad-x) -64px 0;
+      z-index: 3;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 1px solid rgba(6,6,6,0.18);
+      background: rgba(255,255,255,0.55);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .cd-close:hover { transform: scale(1.08); }
+    .cd-close:active { transform: scale(0.92); }
+    .cd-close:focus-visible { outline: 2px solid var(--dark); outline-offset: 2px; }
+    .cd-close::before, .cd-close::after {
+      content: '';
+      position: absolute;
+      width: 18px; height: 2px;
+      background: var(--c-ink);
+      border-radius: 2px;
+    }
+    .cd-close::before { transform: rotate(45deg); }
+    .cd-close::after  { transform: rotate(-45deg); }
+
+    .cd-body {
+      display: flex;
+      flex-direction: column;
+      /* bottom pad clears the 34px .cd-wavy crest that overlaps up out of .cd-alt,
+         so the send button never sits right on the wave */
+      padding: 72px var(--cd-pad-x) 72px;
+    }
+
+    .cd-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 1.6px;
+      color: rgba(6,6,6,0.55);
+    }
+    .cd-dot {
+      position: relative;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--c-gold);
+      flex-shrink: 0;
+    }
+    .cd-dot::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 2px solid var(--c-gold);
+      opacity: 0;
+      animation: avail-pulse 1.8s cubic-bezier(0.4,0,0.6,1) infinite;
+    }
+
+    .cd-title {
+      margin: 22px 0 16px;
+      font-family: 'DM Serif Display', serif;
+      font-weight: 400;
+      font-size: clamp(44px, 8vw, 60px);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: var(--text-heading);
+    }
+
+    .cd-intro {
+      max-width: 40ch;
+      margin-bottom: 0;
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 17px;
+      line-height: 1.7;
+      letter-spacing: -0.2px;
+      color: rgba(6,6,6,0.72);
+    }
+
+    /* no gap here — each block below sets its own margin, so the error can stay
+       tucked under the send button instead of inheriting the block gap */
+    .cd-form { display: flex; flex-direction: column; }
+    .cd-honey { display: none; }
+
+    .cd-fields {
+      display: flex;
+      flex-direction: column;
+      gap: var(--cd-gap-field);
+      /* hairline + asymmetric air (block above, field-gap below) makes the rule
+         read as the group's own top edge rather than a floating divider */
+      margin-top: var(--cd-gap-block);
+      padding-top: var(--cd-gap-field);
+      border-top: 1px solid rgba(6,6,6,0.12);
+    }
+
+    .cd-field { display: flex; flex-direction: column; gap: var(--cd-gap-tight); }
+    .cd-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 1.8px;
+      color: rgba(6,6,6,0.5);
+      transition: color 0.18s ease;
+    }
+    .cd-field:focus-within .cd-label { color: var(--c-ink); }
+
+    .cd-input {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px;
+      color: var(--text-heading);
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(6,6,6,0.25);
+      border-radius: 0;
+      padding: 4px 0 14px;
+      transition: border-color 0.18s ease;
+    }
+    .cd-input::placeholder { color: rgba(6,6,6,0.32); }
+    .cd-input:focus {
+      outline: none;
+      border-bottom-color: var(--c-ink);
+      box-shadow: 0 1px 0 0 var(--c-gold);
+    }
+    .cd-textarea { resize: vertical; min-height: 96px; line-height: 1.6; overflow-x: hidden; }
+    .cd-textarea::-webkit-scrollbar { width: 3px; height: 0; }
+
+    .cd-send {
+      align-self: flex-start;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: var(--cd-gap-block);
+      padding: 14px 26px;
+      border: none;
+      border-radius: 999px;
+      background: var(--c-ink);
+      color: var(--c-cream);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px -10px rgba(6,6,6,0.5);
+      transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s;
+    }
+    .cd-send img { filter: invert(1); }
+    .cd-send:hover { transform: scale(1.04); box-shadow: 0 10px 24px -10px rgba(30,58,95,0.5); }
+    .cd-send:active { transform: scale(0.97); }
+    .cd-send:focus-visible { outline: 2px solid var(--dark); outline-offset: 3px; }
+    .cd-send:disabled { opacity: 0.65; cursor: default; transform: none; }
+
+    .cd-error {
+      margin-top: 16px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #a85a48;
+    }
+    .cd-error a { color: inherit; font-weight: 500; }
+
+    /* success state — the daisy springs up from the "soil" (bottom origin) */
+    .cd-done { display: flex; flex-direction: column; align-items: flex-start; }
+    .cd-done[hidden], .cd-form[hidden] { display: none; }
+    .cd-daisy { transform-origin: 50% 100%; overflow: visible; }
+    .cd-done.show .cd-daisy { animation: cd-grow 0.9s cubic-bezier(0.34,1.56,0.64,1) both; }
+    @keyframes cd-grow {
+      from { transform: scale(0); }
+      to   { transform: scale(1); }
+    }
+    .cd-done-title {
+      margin: 20px 0 10px;
+      font-family: 'DM Serif Display', serif;
+      font-weight: 400;
+      font-size: 40px;
+      letter-spacing: -0.03em;
+      color: var(--text-heading);
+    }
+    .cd-done-copy {
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 17px;
+      line-height: 1.7;
+      letter-spacing: -0.2px;
+      color: rgba(6,6,6,0.72);
+    }
+
+    /* alternates strip — sand surface with the site's wavy crest as its top edge */
+    .cd-alt {
+      position: relative;
+      margin-top: auto;
+      padding: 40px var(--cd-pad-x) 44px;
+      background: var(--surface-raised);
+    }
+    .cd-wavy {
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+      width: 100%;
+      height: 34px;
+      display: block;
+      pointer-events: none;
+    }
+    .cd-wavy path { fill: var(--surface-raised); }
+    .cd-alt-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 1.8px;
+      color: rgba(6,6,6,0.5);
+      margin-bottom: 12px;
+    }
+    .cd-alt-mail {
+      display: inline-block;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 500;
+      font-size: 20px;
+      color: var(--text-heading);
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 6px;
+      transition: color 0.3s ease, transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .cd-alt-mail:hover { color: #fc9073; transform: translateY(-1px); }
+    .cd-alt-mail:active { transform: translateY(0) scale(0.98); }
+    .cd-alt-mail:focus-visible { outline: 2px solid #fc9073; outline-offset: 3px; border-radius: 4px; }
+    .cd-alt-social {
+      display: flex;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .cd-alt-social a {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 1.4px;
+      color: rgba(6,6,6,0.6);
+      text-decoration: none;
+      transition: color 0.3s ease, transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .cd-alt-social a:hover { color: #fc9073; transform: translateY(-1px); }
+    .cd-alt-social a:active { transform: translateY(0) scale(0.97); }
+    .cd-alt-social a:focus-visible { outline: 2px solid #fc9073; outline-offset: 3px; border-radius: 4px; }
+
+    /* footer headline is now the drawer trigger */
+    .ft-head-btn {
+      font: inherit;
+      letter-spacing: inherit;
+      word-spacing: inherit;   /* same UA reset as letter-spacing above */
+      color: inherit;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .ft-head-btn:hover {
+      text-decoration: underline;
+      text-decoration-thickness: 0.035em;
+      text-underline-offset: 0.14em;
+    }
+    .ft-head-btn:active { transform: scale(0.985); }
+    .ft-head-btn:focus-visible {
+      outline: 3px solid var(--text-heading);
+      outline-offset: 10px;
+      border-radius: 6px;
+    }
+    /* hide the watering-can cursor while hovering the headline (it's a button here) */
+    body:has(.ft-head-btn:hover) .ft-cursor,
+    body:has(.ft-head-btn:hover) .ft-tip { opacity: 0; }
+
+    /* night: drawer inks flip to cream over the dark surfaces */
+    body.night .cd-close { border-color: rgba(255,255,255,0.25); background: rgba(17,28,54,0.55); }
+    body.night .cd-close::before, body.night .cd-close::after { background: var(--c-cream-2); }
+    body.night .cd-eyebrow { color: rgba(255,249,241,0.55); }
+    body.night .cd-intro, body.night .cd-done-copy { color: rgba(255,249,241,0.72); }
+    body.night .cd-fields { border-top-color: rgba(255,249,241,0.14); }
+    body.night .cd-label { color: rgba(255,249,241,0.5); }
+    body.night .cd-field:focus-within .cd-label { color: var(--c-cream); }
+    body.night .cd-input { border-bottom-color: rgba(255,249,241,0.3); }
+    body.night .cd-input::placeholder { color: rgba(255,249,241,0.35); }
+    body.night .cd-input:focus { border-bottom-color: var(--c-cream); }
+    body.night .cd-send { background: var(--c-cream); color: var(--c-ink); box-shadow: 0 8px 20px -10px rgba(0,0,0,0.6); }
+    body.night .cd-send img { filter: none; }
+    body.night .cd-send:focus-visible { outline-color: var(--c-cream); }
+    body.night .cd-error { color: #fc9073; }
+    body.night .cd-alt-label { color: rgba(255,249,241,0.5); }
+    body.night .cd-alt-social a { color: rgba(255,249,241,0.6); }
+
+    @media (max-width: 640px) {
+      /* the scale steps down but keeps the same block:field ratio — that ratio is
+         what carries the structure on a narrow screen, not the absolute values */
+      .contact-drawer { --cd-gap-field: 26px; --cd-gap-block: 38px; --cd-pad-x: 24px; }
+      .cd-body { padding: 76px var(--cd-pad-x) 64px; }
+      .cd-alt { padding: 32px var(--cd-pad-x) 36px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .contact-scrim, .contact-drawer { transition: none; }
+      .cd-dot::after { animation: none; }
+      .cd-done.show .cd-daisy { animation: none; }
+    }
+
+/* ── night theme: re-point the Tier-2 role tokens (page-specific night art stays in each page) ── */
+    body.night {
+      --bg-base:        var(--c-night);      /* #0a0a0f — page, projects, featured, marquee fade */
+      --surface-raised: var(--c-navy);       /* #111c36 — testimonials, footer, crest */
+      --text-heading:   var(--c-cream);      /* intro, featured heading, footer head/sub */
+      --text-title:     var(--c-cream);      /* testimonials heading */
+      --text-eyebrow:   var(--c-cream);      /* testimonials eyebrow */
+      --text-contrast:  var(--c-white);      /* nav-right label, tile-overlay text */
+      --nav-scrolled:   var(--c-cream-2);    /* nav sides when scrolled */
+      --overlay-scrim:  rgba(0,0,0,0.7);     /* tile hover overlay */
+      --hero-from:      var(--c-navy-1);     /* #1f3b6d — hero + menu gradient */
+      --hero-to:        var(--c-navy-2);     /* #031835 */
+      --toggle-track:   var(--c-toggle-navy);
+      --toggle-border:  var(--c-border-dark);
+      --toggle-knob:    var(--c-white);
+      --focus-ring:     var(--c-cream);
+      --trail-stroke:   var(--c-cream);
+    }
+
+/* ── theme dissolve: crossfade the page when the day/night toggle fires ── */
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation-duration: 0.45s;
+      animation-timing-function: ease;
+    }
+    /* fallback for browsers without View Transitions: fade the token-driven
+       colors while body.theme-fading is on (removed by site.js after 500ms) */
+    body.theme-fading,
+    body.theme-fading * {
+      transition: background-color 0.45s ease, color 0.45s ease,
+                  border-color 0.45s ease, fill 0.45s ease, stroke 0.45s ease;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      ::view-transition-old(root),
+      ::view-transition-new(root) { animation: none; }
+      body.theme-fading,
+      body.theme-fading * { transition: none; }
+    }
+
+/* ── responsive: nav + footer chrome (page rules stay in each page) ── */
+@media (max-width: 1100px) {
+      #nav { padding: 16px 20px 0; }
+      .nav-side { display: none; }              /* VANCOUVER, BC */
+      .nav-side.right { display: flex; width: auto; }
+      /* case studies keep the left side, but only for the Back button */
+      body.route-hatcha .nav-side,
+      body.route-fireflut .nav-side,
+      body.route-existence .nav-side,
+      body.route-jumpable .nav-side { display: flex; width: auto; }
+      .nav-pill { gap: 16px; }
+      .nav-links { gap: 4px; }
+      /* the hidden avail-tag/dot cancel the pill gap with negative margins;
+         they must match the smaller mobile gap or the links overlap the avatar */
+      .avail-tag, .avail-dot { margin-left: -16px; }
+      .nav-pill.compact .avail-tag, .nav-pill.compact .avail-dot { margin-left: 0; }
+      /* ── footer responsive — reflow the 1440 canvas into one column ── */
+      .footer {
+        height: auto;
+        /* fill the viewport with the browser toolbar COLLAPSED (large viewport
+           height) — svh left a gap at the page bottom, where the bar is always
+           collapsed. 100vh is the fallback for older browsers. */
+        min-height: 100vh;
+        min-height: 100lvh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;               /* headline centred in the space above the meadow */
+        padding: 92px 24px calc(22vw + 92px);  /* bottom reserves meadow + bottom bar */
+        text-align: center;
+      }
+      .ft-land { width: 150%; height: auto; bottom: 0; }
+      .ft-inner {
+        position: static;
+        display: block;              /* revert the desktop centred-group flex layout */
+        bottom: auto;
+        transform: none;
+        gap: 0;
+        width: 100%;
+        /* no column cap: the headline is one nowrap line that runs wider than a
+           660px column below ~1100px, and text-align only centres LEFTOVER space
+           — negative space spills off the right instead. .ft-sub keeps its own
+           560px measure, so nothing else widens. */
+        max-width: none;
+        height: auto;
+        margin: 0 auto;
+      }
+      .ft-sub {
+        position: static;
+        width: 100%;
+        max-width: 560px;
+        transform: none;
+        margin: 0 auto 32px;
+        font-size: clamp(16px, 3.2vw, 22px);
+        letter-spacing: -0.5px;
+      }
+      .ft-head {
+        position: static;
+        line-height: 0.92;
+        letter-spacing: -0.045em;
+        text-box-trim: normal;      /* trim only matters for the absolute canvas */
+        text-box-edge: auto;
+      }
+      /* The trigger stays an inline-block button (base display). It used to be
+         display:block/width:100% here, because a WRAPPING headline had its first
+         line hoisted into the subtitle by baseline alignment — but the headline
+         is white-space:nowrap at every width now, so it can never wrap. Block
+         would actively hurt: this column is capped at 660px and the headline runs
+         wider than that below ~1100px, and a full-width block starts the line at
+         the column's left edge and spills it off the right of the screen.
+         Inline-block lets text-align:center split the overrun evenly instead. */
+      /* bottom bar → its own strip inside the meadow: roomy pill tap targets
+         (≥44px) for the socials, credit line resting below with clear air */
+      .ft-credit {
+        top: auto;
+        bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 12px;
+        letter-spacing: -0.3px;
+        color: rgba(255, 255, 255, 0.75);
+      }
+      .ft-social {
+        top: auto;
+        bottom: calc(52px + env(safe-area-inset-bottom, 0px));
+        right: 50%;
+        transform: translateX(50%);
+        gap: 14px;
+      }
+      .ft-social a {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 10px 20px;
+        font-size: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.32);
+        border-radius: 999px;
+        /* dark enough that the land art can't show through the pill face —
+           a translucent fill made the pills look laid over the meadow */
+        background: rgba(12, 14, 9, 0.42);
+      }
+      /* night meadow keeps the mobile crop (the global body.night rule pins it to
+         106vw, which collapses the band to a sliver at phone widths) */
+      body.night .footer .ft-land { width: 150%; }
+    }
+@media (max-width: 640px) {
+      .nav-link { display: none; }              /* links move into overlay menu */
+      .nav-burger { display: flex; }
+      .nav-pill { gap: 10px; }
+      .avail-tag, .avail-dot { margin-left: -10px; }
+      .nav-pill.compact .avail-tag, .nav-pill.compact .avail-dot { margin-left: 0; }
+      .nav-cta { font-size: 14px; padding: 8px 12px; }
+      .nav-cta img { width: 20px; height: 20px; }
+
+      /* DAY toggle stays, compact */
+      .nav-side.right { font-size: 13px; }
+      .nav-side.right img { width: 40px; height: 19px; }
+
+      /* case study: the Back button shares the bar with the pill + toggle, which
+         overflow at phone widths — collapse Back to icon-only and drop the DAY
+         label so all three fit. Back keeps its aria-label for screen readers. */
+      body.route-hatcha .nav-back span,
+      body.route-fireflut .nav-back span,
+      body.route-existence .nav-back span,
+      body.route-jumpable .nav-back span { display: none; }
+      body.route-hatcha .nav-back,
+      body.route-fireflut .nav-back,
+      body.route-existence .nav-back,
+      body.route-jumpable .nav-back { gap: 0; padding: 6px; }
+      body.route-hatcha #theme-label,
+      body.route-fireflut #theme-label,
+      body.route-existence #theme-label,
+      body.route-jumpable #theme-label { display: none; }
+      /* ── footer mobile ── */
+      /* bottom pad = ground band (~48vw) + garden headroom, so the centred text
+         block sits in the upper-middle of the cream sky instead of drifting into
+         the plants — kills the dead band that sat between headline and meadow */
+      .footer { padding: 84px 20px calc(48vw + 170px); }
+      /* the crest is proportionally faithful to desktop, but at phone width that
+         reads as a faint ripple. Stretch it taller (preserveAspectRatio=none) so the
+         wave clearly registers as a crest; top keeps the trough flush to the footer. */
+      .ft-wavy { height: 20vw; top: -9.6vw; }
+      .ft-head { letter-spacing: -0.04em; }
+      .ft-sub { font-size: clamp(15px, 4vw, 19px); margin-bottom: 28px; }
+      /* tall ground band on phones (day art is 2880×406) — enough vertical dark
+         for the bottom bar AT the base plus a soil zone above it that the plant
+         roots sink into, even where the art's ridge dips lowest */
+      /* the whole meadow is LIFTED off the footer bottom so the bar gets its own
+         clean strip underneath. Plant art (fronds, the paint filter's wobble)
+         overhangs ~30px below a plant's base point, so the lift has to clear the
+         pills by more than the base maths alone suggests. */
+      .ft-land { width: 340%; bottom: 104px; }
+      body.night .footer .ft-land { width: 300%; }   /* night art is 4752×888 → keeps its ridge above the ground strip */
+      /* solid ground strip pinned to the footer bottom: sits over the meadow art
+         (z4) and under the bar (z5), so the socials + credit always read on a
+         near-black band in BOTH themes, on every real device. Opaque past the
+         pills, then fades near its top so it melts into the soil above rather
+         than cutting a hard seam (and hides the lifted land's bottom edge). */
+      .footer::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 176px;
+        z-index: 4;
+        pointer-events: none;
+        background: linear-gradient(to top,
+          rgb(13, 12, 15) 0%,
+          rgb(13, 12, 15) 72%,       /* opaque well past the land's lifted bottom edge */
+          rgba(13, 12, 15, 0.84) 84%,
+          rgba(13, 12, 15, 0) 100%);
+      }
+      /* sit the whole bar INSIDE the dark land band — on phones the night art's
+         ridge line falls ~95px above the footer bottom, so the pills must top out
+         below that or they read as floating on the meadow */
+      .ft-credit { bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }
+      .ft-social { bottom: calc(36px + env(safe-area-inset-bottom, 0px)); }
+      .ft-social a { padding: 10px 18px; font-size: 14px; }
+    }
+/* very narrow phones: the pill collides with the theme toggle */
+@media (max-width: 360px) {
+      #nav { padding: 14px 12px 0; }
+      .nav-cta { font-size: 13px; padding: 7px 10px; gap: 6px; }
+      #theme-label { display: none; }   /* toggle keeps its aria-label */
+    }
+
+/* ══ mobile nav (portrait + landscape phones) ══
+   Break the single glass pill: hamburger alone on the LEFT, and on the RIGHT
+   the email ("Work with me") icon sits beside the day/night toggle at a
+   matching size. The avatar + music button are dropped on phones.
+   display:contents dissolves the pill so its children flow straight into the
+   #nav flex row, letting `order` + an auto margin split them left / right. */
+@media (max-width: 640px), (orientation: landscape) and (max-height: 480px) {
+      .nav-pill  { display: contents; }   /* no glass; children flow into #nav */
+      .nav-links { display: contents; }
+      .nav-id, .avail-tag, .avail-dot, .nav-wave { display: none; }  /* drop avatar + music */
+      .nav-link { display: none; }        /* Work/About/Playground live in the overlay */
+
+      #nav { gap: 10px; }
+
+      /* the three controls each take the desktop day/night button's disc — an opaque
+         white (day) / navy (night) circle with a soft border + inset shadow. No glass.
+         Same tokens as .day-toggle / .nav-wave, so mobile matches desktop exactly. */
+      .nav-burger,
+      .nav-cta,
+      .day-toggle {
+        background: var(--toggle-track);
+        border: 1px solid var(--toggle-border);
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.10);
+      }
+      .nav-burger:hover, .nav-cta:hover { transform: scale(1.06); }
+      .nav-burger:active, .nav-cta:active { transform: scale(0.94); }
+
+      /* hamburger → far left, pushes the rest right */
+      .nav-burger {
+        display: flex;
+        order: -1;
+        margin-right: auto;
+        width: 34px; height: 34px;
+      }
+
+      /* "Work with me" → icon-only disc */
+      .nav-cta {
+        order: 1;
+        width: 34px; height: 34px;
+        min-width: 34px;
+        padding: 0;
+        gap: 0;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 0;                     /* hide the label, keep the email icon */
+      }
+      .nav-cta img { width: 20px; height: 20px; }
+
+      /* the disc is opaque now, so its icons track the THEME (not the backdrop):
+         dark on the white day disc, cream on the navy night disc — exactly like the
+         day/night toggle + music wave. These override the nav-on-dark/light rules. */
+      body:not(.night) #nav .nav-burger { color: var(--c-ink); }
+      body:not(.night) #nav .nav-cta img { filter: brightness(0); }
+      body.night #nav .nav-burger { color: var(--c-cream-2); }
+      body.night #nav .nav-cta img { filter: invert(1) brightness(1.8); }
+
+      /* menu open: the burger keeps its disc (matching the other controls) and morphs
+         to the close X. The X uses the theme colour above — dark on the white day
+         disc, cream on the navy night disc — so it reads on the disc over the overlay.
+         (These win over the always-cream #nav.menu-open rule via the extra type
+         selector.) The disc sits above the overlay through that rule's z-index. */
+
+      .nav-side.right { order: 2; }        /* day/night toggle on the far right */
+
+      /* ── case study: Back replaces the hamburger ──
+         Inside a case study there is one obvious move — get out — so the burger
+         is redundant. Drop it and let Back take its far-left disc. Scoped to the
+         four case-study routes only: everywhere else the burger is the sole
+         menu, and hiding it would strand the page with no navigation.
+         .nav-side (left) is a flex container in its own right, so Back can't be
+         re-ordered against #nav's row — the auto margin goes on the side itself,
+         which already sits first in source order once the burger is gone. */
+      body.route-hatcha   #nav .nav-burger,
+      body.route-fireflut #nav .nav-burger,
+      body.route-existence #nav .nav-burger,
+      body.route-jumpable #nav .nav-burger { display: none; }
+
+      body.route-hatcha   .nav-side:not(.right),
+      body.route-fireflut .nav-side:not(.right),
+      body.route-existence .nav-side:not(.right),
+      body.route-jumpable .nav-side:not(.right) { margin-right: auto; }
+
+      /* same 34px opaque disc as the email + day/night controls */
+      body.route-hatcha   .nav-back,
+      body.route-fireflut .nav-back,
+      body.route-existence .nav-back,
+      body.route-jumpable .nav-back {
+        width: 34px; height: 34px;
+        padding: 0;
+        gap: 0;
+        justify-content: center;
+        border-radius: 50%;
+        background: var(--toggle-track);
+        border: 1px solid var(--toggle-border);
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.10);
+      }
+      body.route-hatcha   .nav-back:active,
+      body.route-fireflut .nav-back:active,
+      body.route-existence .nav-back:active,
+      body.route-jumpable .nav-back:active { transform: scale(0.94); }
+
+      /* opaque disc → the arrow tracks the THEME, not the backdrop (same reason
+         as the burger/email rules above, and the same override strength) */
+      body:not(.night).route-hatcha   #nav .nav-back,
+      body:not(.night).route-fireflut #nav .nav-back,
+      body:not(.night).route-existence #nav .nav-back,
+      body:not(.night).route-jumpable #nav .nav-back { color: var(--c-ink); }
+      body.night.route-hatcha   #nav .nav-back,
+      body.night.route-fireflut #nav .nav-back,
+      body.night.route-existence #nav .nav-back,
+      body.night.route-jumpable #nav .nav-back { color: var(--c-cream-2); }
+    }
+
+/* custom-element wrappers add no box — inner #nav (fixed) / <footer> lay out as before */
+site-nav, site-footer { display: contents; }
+
+/* ════════════════════════════════════════════════════════════════════════
+   LOADING SCREEN — Figma node 572:1811
+   Gold Pac-Man chomps a row of 4 sand dots, centred on the page field.
+   Colours are pure tokens so it flips with the day/night theme for free.
+   Two half-circle "lips" rotate open/closed for a genuinely round chomp;
+   dots fade out nearest-first as a wave. Markup lives at the top of <body>;
+   window.pageLoader (js/site.js) shows/hides it. transform/opacity only.
+   ════════════════════════════════════════════════════════════════════════ */
+html.pl-lock, body.pl-lock { overflow: hidden; }
+
+#page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;          /* the sole in-flow child (.pl-stage) sits at exact
+                                   viewport centre; .pl-line is taken out of flow
+                                   below so it never shifts the pac/dots off-centre */
+  background: var(--c-cream);
+  transition: opacity .4s ease;
+}
+body.night #page-loader { background: var(--c-night); }
+#page-loader.is-hiding { opacity: 0; pointer-events: none; }
+
+/* ════════════════════════════════════════════════════════════════════════
+   ROUTE CURTAIN — page transition between Home / About / Playground.
+   Two panes (each 100vw × 50vh) close to cover, the route swaps behind them,
+   then they open (top up / bottom down) revealing the new page while its
+   content fades in. Theme-aware fill via var(--bg-base) (same token as the
+   loader). Sits above the nav (z 100) but below the cold-load loader (z 9999).
+   Sequenced by the router IIFE in index.html. transform/opacity only.
+   ════════════════════════════════════════════════════════════════════════ */
+#route-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  pointer-events: none;
+  visibility: hidden;      /* inert until a transition activates it */
+}
+#route-curtain.is-active { visibility: visible; }
+
+/* Full-viewport scrim that fades the incoming page 0→100% as the panes open.
+   Doing the content fade here (a bg-coloured layer above the page, below the panes)
+   keeps it route-agnostic and avoids ever touching a view's own scroll-reveal /
+   display:contents wrappers. Opaque while covered, fades out on open. */
+.rc-scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-base);
+  opacity: 0;                                                  /* resting: invisible */
+  transition: opacity 900ms cubic-bezier(0.22, 1, 0.36, 1);   /* open: matches panes */
+}
+#route-curtain.is-closed .rc-scrim { opacity: 1; }            /* covered */
+#route-curtain.is-closing .rc-scrim { transition: opacity 550ms cubic-bezier(0.7, 0, 0.84, 0); }
+
+.rc-pane {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 50vh;
+  z-index: 1;           /* stack above the scrim */
+  background: var(--bg-base);
+  will-change: transform;
+  /* resting (open) state — panes parked off-screen */
+  transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);   /* open: slow expressive decelerate */
+}
+.rc-pane--top    { top: 0;    transform: translateY(-100%); }
+.rc-pane--bottom { bottom: 0; transform: translateY(100%); }
+
+/* closed — the two panes meet and fully cover the viewport */
+#route-curtain.is-closed .rc-pane { transform: translateY(0); }
+/* closing uses a slightly quicker accelerate-in curve */
+#route-curtain.is-closing .rc-pane {
+  transition: transform 550ms cubic-bezier(0.7, 0, 0.84, 0);
+}
+
+/* The incoming-content fade (opacity 0 → 1 over the open phase) is applied via
+   inline styles in the router JS, so it never leaves a permanent opacity
+   transition on the landing sections (they have their own scroll-reveal). */
+
+@media (prefers-reduced-motion: reduce) {
+  #route-curtain { display: none; }
+}
+
+/* Fixed-width stage, grid-centred in the viewport. Pac-Man stays put on the left,
+   chomping in place; the dots stream leftward into its mouth on an endless
+   conveyor and vanish behind it (pac paints on top). Matches the reference GIF. */
+.pl-stage {
+  position: relative;
+  width: 220px;
+  height: 44px;
+  overflow: hidden;             /* clip the trailing dots; pac sits fully inside at left */
+}
+
+/* ── dot conveyor: a long row sliding left one dot-pitch per chomp. Identical,
+   evenly spaced dots make the loop seamless; the right end fades out via a mask,
+   the left end disappears behind the opaque pac (= eaten). pitch = 13 + 19 = 32. */
+.pl-dots {
+  position: absolute;
+  top: 0;
+  left: 8px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 19px;
+  z-index: 1;
+  will-change: transform;
+  animation: plStream 0.5s linear infinite;
+  -webkit-mask-image: linear-gradient(90deg, #000 0, #000 60%, transparent 100%);
+          mask-image: linear-gradient(90deg, #000 0, #000 60%, transparent 100%);
+}
+.pl-dots i {
+  flex: 0 0 auto;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--c-sand);
+}
+/* slide left exactly one dot-pitch (32px) then loop — visually continuous flow */
+@keyframes plStream {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-32px); }
+}
+
+/* ── Pac-Man: 44px disc (two rotating lips), fixed at the left, mouth chomping
+   right so the incoming dots disappear into it. Paints above the dots. ── */
+.pl-pac {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 44px;
+  height: 44px;
+  z-index: 2;
+}
+.pl-lip {
+  position: absolute;
+  left: 0;
+  width: 44px;
+  height: 22px;
+  background: var(--c-gold);
+  will-change: transform;
+}
+.pl-top {
+  top: 0;
+  border-radius: 44px 44px 0 0;
+  transform-origin: 50% 100%;   /* pivot on the disc centre */
+  animation: plChompTop 0.5s ease-in-out infinite;
+}
+.pl-bottom {
+  bottom: 0;
+  border-radius: 0 0 44px 44px;
+  transform-origin: 50% 0;
+  animation: plChompBottom 0.5s ease-in-out infinite;
+}
+/* mouth opens LEFT */
+@keyframes plChompTop {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(-34deg); }
+}
+@keyframes plChompBottom {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(34deg); }
+}
+
+/* ── rotating cheeky line — arcade/mono voice ── */
+.pl-line {
+  position: absolute;           /* out of flow — sits below centre without pushing
+                                   the pac/dots row off the viewport's vertical middle */
+  left: 0;
+  right: 0;
+  top: calc(50% + 56px);
+  margin: 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--c-ink);
+  opacity: 0.66;
+  text-align: center;
+  transition: opacity .3s ease;
+}
+body.night .pl-line { color: var(--c-cream-2); }
+.pl-line.pl-line-swap { opacity: 0; }
+
+/* ── reduced motion: no stream/chomp — hold a static frame (pac at left with a
+   still row of dots trailing right, mouth open right toward them) ── */
+@media (prefers-reduced-motion: reduce) {
+  #page-loader { transition: none; }
+  .pl-dots { animation: none; }
+  .pl-top, .pl-bottom { animation: none; }
+  .pl-top    { transform: rotate(-20deg); }   /* frozen slightly-open mouth, facing left */
+  .pl-bottom { transform: rotate(20deg); }
+  .pl-line { transition: none; }
+}
+
+/* ════ ROUTE HERO TRANSITION — opening a case study (from a home project tile or
+   from a read-next panel) expands that case study's hero asset out of the thing
+   you clicked, holds it full-screen, then slides it DOWN into its resting place
+   in the hero while the title and meta arrive above it.
+
+   The overlay is always exactly one viewport, holding a clone of the DESTINATION
+   hero mock, and every state (source rect / full screen / resting rect) is one
+   transform + clip-path off that same box — see fitRect() in index.html. Cloning
+   the destination rather than the source is deliberate: the landing frame is the
+   one that persists, so that's the handoff that has to be pixel-exact.
+
+   Sits above all page content (the deck stage is 13, the footer 12) but UNDER
+   #nav (100), so the nav floats over the image the whole way exactly as it does
+   over a hero at rest — no pop when the overlay hands off. ════ */
+.rt-hero {
+  position: fixed;
+  left: 0; top: 0;
+  width: 100vw; height: 100vh;
+  z-index: 90;
+  transform-origin: 0 0;
+  overflow: hidden;
+  pointer-events: none;
+  will-change: transform, clip-path;
+  backface-visibility: hidden;
+}
+.rt-hero .cs-hero-mock { width: 100%; height: 100%; aspect-ratio: auto; margin: 0; max-height: none; }
+/* the real mock underneath must not paint through the overlay before it lands */
+.rt-settling .cs-hero .cs-hero-mock { visibility: hidden; }
+/* hero copy is held back, then rises in as the image clears it */
+.rt-settling .cs-hero .cs-hero-grid { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rt-hero { display: none; }
+  .rt-settling .cs-hero .cs-hero-mock,
+  .rt-settling .cs-hero .cs-hero-grid { visibility: visible; opacity: 1; }
+}
+
+/* ════ GLOBAL DOT CURSOR — a small dot that follows the pointer and inverts
+   whatever colour sits beneath it (mix-blend-mode: difference). Only on
+   devices with a real, fine pointer; touch devices keep the native default. ════ */
+@media (hover: hover) and (pointer: fine) {
+  html.dot-cursor-on,
+  html.dot-cursor-on body,
+  html.dot-cursor-on * { cursor: none !important; }
+
+  .dot-cursor {
+    position: fixed;
+    top: 0; left: 0;
+    width: 12px; height: 12px;
+    margin: -6px 0 0 -6px;        /* centre on the pointer */
+    border-radius: 50%;
+    background: #fff;             /* white + difference = inverse of what's behind */
+    mix-blend-mode: difference;
+    pointer-events: none;
+    z-index: 2147483647;
+    opacity: 0;
+    will-change: transform;
+    transition: opacity 0.2s ease, width 0.16s ease, height 0.16s ease, margin 0.16s ease;
+  }
+  .dot-cursor.on { opacity: 1; }
+
+  /* grow softly over anything clickable */
+  .dot-cursor.hot { width: 30px; height: 30px; margin: -15px 0 0 -15px; }
+
+  /* a small pinch on press */
+  .dot-cursor.down { width: 8px; height: 8px; margin: -4px 0 0 -4px; }
+
+  /* over the recorder: the dot swells into a labelled circle.
+     Still difference-blended, so the disc inverts the backdrop and the black
+     label knocks out to the true page colour underneath. */
+  .dot-cursor.reel,
+  .dot-cursor.labelled { width: 104px; height: 104px; margin: -52px 0 0 -52px; }
+
+  .dot-cursor .dot-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 16px;
+    box-sizing: border-box;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 1.18;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #000;                 /* knockout via difference */
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.16s ease, transform 0.2s cubic-bezier(0.22,1,0.36,1);
+    pointer-events: none;
+  }
+  .dot-cursor.reel .dot-label,
+  .dot-cursor.labelled .dot-label { opacity: 1; transform: scale(1); }
+
+  /* the footer garden has its own watering-can cursor — hide the dot there */
+  body:has(.ft-cursor.on) .dot-cursor { opacity: 0; }
+}

@@ -4,10 +4,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yug Shah — Interactive Type Garden & Playful Portfolio</title>
+
+  <!-- Primary SEO Title & Description -->
+  <title>Yug Shah (Shah Yug Vipulbhai) | CS Developer, LeetCode &amp; Portfolio</title>
   <meta name="description"
-    content="Shah Yug Vipulbhai (Yug Shah) — Computer Science & Engineering researcher, AI/ML builder, quantitative systems developer. Interactive procedural botanical typography, lo-fi music player, and creative works.">
+    content="Official portfolio of Yug Shah (Shah Yug Vipulbhai), a B.Tech Computer Science and Engineering student in Mumbai specializing in C++ DSA, Full-Stack Development, Cybersecurity, and AI.">
+  <meta name="author" content="Yug Shah">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://yugshah.xyz/">
   <link rel="icon" type="image/webp" href="./index_files/favicon.webp">
+
+  <!-- Open Graph (Social Preview for LinkedIn, WhatsApp, Discord) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Yug Shah | Developer Portfolio &amp; Digital Garden">
+  <meta property="og:description"
+    content="Explore the software engineering, C++ DSA, AI, and cybersecurity projects of Yug Shah.">
+  <meta property="og:url" content="https://yugshah.xyz/">
+  <meta property="og:site_name" content="Yug Shah">
+
+  <!-- Google Knowledge Graph Schema (Connects GitHub, LinkedIn & LeetCode) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Yug Shah",
+    "alternateName": "Shah Yug Vipulbhai",
+    "url": "https://yugshah.xyz/",
+    "jobTitle": "Computer Science & Engineering Student and Developer",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Mumbai",
+      "addressRegion": "Maharashtra",
+      "addressCountry": "IN"
+    },
+    "affiliation": {
+      "@type": "CollegeOrUniversity",
+      "name": "SVKM's Shri Bhagubhai Mafatlal Polytechnic and College of Engineering"
+    },
+    "knowsAbout": [
+      "Data Structures and Algorithms",
+      "C++",
+      "Python",
+      "React",
+      "Full-Stack Web Development",
+      "Cybersecurity",
+      "Machine Learning",
+      "Quantitative Finance"
+    ],
+    "sameAs": [
+      "https://github.com/Yug-the-pirate-king",
+      "https://leetcode.com/u/Yugshah/",
+      "https://www.linkedin.com/in/yug-shah26"
+    ]
+  }
+  </script>
 
   <!-- Google Fonts: DM Mono, Playfair Display, Space Grotesk, Caveat for playful notes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -208,6 +258,110 @@
       }
     }
 
+    /* ════ HAMBURGER MENU BUTTON ════ */
+    .hamburger-btn {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      width: 36px;
+      height: 36px;
+      padding: 6px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--badge-bg);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      z-index: 110;
+    }
+
+    .hamburger-btn:hover {
+      border-color: var(--flower);
+    }
+
+    .hamburger-btn span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: var(--garden-text);
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    .hamburger-btn.open span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    .hamburger-btn.open span:nth-child(2) {
+      opacity: 0;
+    }
+    .hamburger-btn.open span:nth-child(3) {
+      transform: rotate(-45deg) translate(5px, -5px);
+    }
+
+    @media (max-width: 1024px) {
+      .hamburger-btn {
+        display: flex;
+      }
+    }
+
+    /* ════ MOBILE NAV OVERLAY ════ */
+    .mobile-nav-overlay {
+      position: fixed;
+      top: 60px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg-base);
+      z-index: 99;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 40px;
+      gap: 8px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-20px);
+      transition: opacity 0.35s var(--ease-out), transform 0.35s var(--ease-out), visibility 0.35s;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .mobile-nav-overlay.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .mobile-nav-overlay a {
+      font-size: 16px;
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      padding: 14px 32px;
+      border-radius: var(--radius-md);
+      transition: all 0.2s ease;
+      width: 80%;
+      max-width: 360px;
+      text-align: center;
+      border: 1px solid transparent;
+    }
+
+    .mobile-nav-overlay a:hover,
+    .mobile-nav-overlay a:active {
+      color: var(--flower);
+      border-color: var(--border);
+      background: var(--bg-card);
+    }
+
+    .mobile-nav-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
     .nav-links a {
       font-size: 11px;
       letter-spacing: 0.1em;
@@ -226,6 +380,24 @@
       display: flex;
       align-items: center;
       gap: 10px;
+    }
+
+    @media (max-width: 640px) {
+      .nav-controls {
+        gap: 6px;
+      }
+      #nav-replay-btn {
+        display: none;
+      }
+      #modes {
+        display: none;
+      }
+      #theme-toggle span:last-child {
+        display: none;
+      }
+      #theme-toggle {
+        padding: 6px 10px;
+      }
     }
 
     .nav-btn {
@@ -484,6 +656,16 @@
       transition: opacity 0.3s ease;
     }
 
+    @media (max-width: 640px) {
+      #intro-badge {
+        top: 68px;
+        left: 12px;
+        right: 12px;
+        font-size: 10px;
+        padding: 6px 12px;
+      }
+    }
+
     html.day #intro-badge {
       background: rgba(253, 248, 240, 0.75);
     }
@@ -532,6 +714,20 @@
       pointer-events: none;
       transition: opacity 0.5s ease, transform 0.5s ease;
       animation: floatBanner 3.6s ease-in-out infinite;
+    }
+
+    @media (max-width: 640px) {
+      #hero-prompt {
+        bottom: 64px;
+        padding: 12px 16px;
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+      }
+      .prompt-buttons {
+        width: 100%;
+        justify-content: center;
+      }
     }
 
     html.day #hero-prompt {
@@ -617,6 +813,25 @@
       opacity: 0.85;
     }
 
+    @media (max-width: 640px) {
+      #bar {
+        left: 12px;
+        right: 12px;
+        bottom: 10px;
+        font-size: 9px;
+        gap: 8px;
+      }
+      [data-tg="hints"] {
+        gap: 8px;
+      }
+      [data-tg="ctrls"] {
+        gap: 4px;
+      }
+      [data-tg="fine"] {
+        display: none;
+      }
+    }
+
     [data-tg="hints"] {
       display: flex;
       gap: 16px;
@@ -673,6 +888,12 @@
       z-index: 20;
     }
 
+    @media (max-width: 768px) {
+      #poster {
+        grid-template-columns: 1fr;
+      }
+    }
+
     [data-tg="panel"] {
       border-right: 1px solid #1E1E1E;
       overflow-y: auto;
@@ -689,6 +910,12 @@
       align-items: center;
       justify-content: center;
       padding: 28px;
+    }
+
+    @media (max-width: 768px) {
+      [data-tg="stage"] {
+        padding: 16px;
+      }
     }
 
     #pcv {
@@ -2260,7 +2487,248 @@
       footer {
         flex-direction: column;
         text-align: center;
+        padding: 24px 20px 32px;
       }
+    }
+
+    /* ════ ADDITIONAL MOBILE RESPONSIVE OVERRIDES ════ */
+    @media (max-width: 480px) {
+      .section-title {
+        font-size: clamp(26px, 7vw, 34px);
+      }
+      .section-subtitle {
+        font-size: 13px;
+      }
+      .bio-lead {
+        font-size: 15px;
+      }
+      .bio-body {
+        font-size: 13px;
+      }
+      .project-card {
+        padding: 22px;
+      }
+      .lead-card {
+        padding: 20px;
+      }
+      .t-card {
+        padding: 20px;
+      }
+      .contact-cta-title {
+        font-size: clamp(22px, 6vw, 34px);
+      }
+      .contact-links {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .contact-pill {
+        text-align: center;
+      }
+      .hike-img {
+        height: 180px;
+      }
+      .polaroid-photo {
+        height: 200px;
+      }
+      .compare-container {
+        height: 220px;
+      }
+      .metric-value {
+        font-size: 20px;
+      }
+      .player-card-box {
+        width: 140px;
+        height: 72px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      #top-nav {
+        padding: 0 14px;
+        height: 56px;
+      }
+    }
+
+    /* ════ PROFILES & LEETCODE SECTION ════ */
+    .profiles-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      margin-top: 36px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 900px) {
+      .profiles-grid {
+        grid-template-columns: 1fr;
+        gap: 22px;
+      }
+    }
+
+    .profiles-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: clamp(24px, 4vw, 36px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      transition: all 0.35s var(--ease-out);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .profiles-card:hover {
+      border-color: var(--flower);
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+    }
+
+    .profiles-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .profile-link-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: all 0.25s ease;
+    }
+
+    html.day .profile-link-item {
+      background: rgba(0, 0, 0, 0.03);
+    }
+
+    .profile-link-item:hover {
+      border-color: var(--flower);
+      background: rgba(255, 20, 0, 0.06);
+      transform: translateX(4px);
+    }
+
+    .profile-icon {
+      font-size: 18px;
+      font-weight: 700;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: var(--badge-bg);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--flower);
+      flex-shrink: 0;
+      font-family: 'DM Mono', monospace;
+    }
+
+    .profile-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .profile-info strong {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .profile-info span {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .profile-link-item .arrow {
+      font-size: 16px;
+      color: var(--text-muted);
+      transition: transform 0.25s ease, color 0.25s ease;
+    }
+
+    .profile-link-item:hover .arrow {
+      color: var(--flower);
+      transform: translate(2px, -2px);
+    }
+
+    .profiles-stats-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: clamp(24px, 4vw, 32px);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      transition: all 0.35s var(--ease-out);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .profiles-stats-card:hover {
+      border-color: #FFA116;
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+    }
+
+    .stats-card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-family: 'DM Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #00B8A3;
+      box-shadow: 0 0 10px #00B8A3;
+      display: inline-block;
+      animation: pulseLive 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseLive {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .leetcode-stats-link {
+      display: block;
+      width: 100%;
+      max-width: 480px;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+
+    .leetcode-stats-link:hover {
+      transform: scale(1.02);
+    }
+
+    .leetcode-card-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
     }
   </style>
 </head>
@@ -2280,6 +2748,7 @@
         <li><a href="#about">About</a></li>
         <li><a href="#case-study">Case Study</a></li>
         <li><a href="#projects">Projects</a></li>
+        <li><a href="#profiles">Profiles &amp; DSA</a></li>
         <li><a href="#polaroids">Life &amp; Moments</a></li>
         <li><a href="#testimonials">Voices</a></li>
         <li><a href="#contact">Contact</a></li>
@@ -2298,8 +2767,30 @@
       </button>
 
       <div id="modes"></div>
+
+      <button class="hamburger-btn" id="hamburger-btn" aria-label="Toggle mobile menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
   </header>
+
+  <!-- ════ MOBILE NAV OVERLAY ════ -->
+  <div class="mobile-nav-overlay" id="mobile-nav-overlay">
+    <a href="#garden" class="mobile-nav-link">Garden</a>
+    <a href="#about" class="mobile-nav-link">About</a>
+    <a href="#case-study" class="mobile-nav-link">Case Study</a>
+    <a href="#projects" class="mobile-nav-link">Projects</a>
+    <a href="#profiles" class="mobile-nav-link">Profiles &amp; DSA</a>
+    <a href="#polaroids" class="mobile-nav-link">Life & Moments</a>
+    <a href="#testimonials" class="mobile-nav-link">Voices</a>
+    <a href="#contact" class="mobile-nav-link">Contact</a>
+    <div class="mobile-nav-controls">
+      <button id="mobile-replay-btn" class="nav-btn" title="Replay flower typing animation">↺ Replay</button>
+    </div>
+  </div>
+
 
   <!-- ════ HERO: INTERACTIVE TYPE GARDEN ════ -->
   <section id="garden">
@@ -2418,8 +2909,8 @@
             Mumbai, India &middot; B.Tech Computer Science &amp; Engineering (2024&ndash;2028)
           </p>
           <div style="margin-top: 24px; display: flex; flex-wrap: wrap; gap: 10px;">
-            <a href="https://shahyug.netlify.app" target="_blank" rel="noopener" class="contact-pill primary">Live
-              Portfolio &#8599;</a>
+            <a href="#contact" class="contact-pill primary">Get in Touch &#8599;</a>
+            <a href="https://leetcode.com/u/Yugshah/" target="_blank" rel="me noopener" class="contact-pill">LeetCode &#8599;</a>
             <a href="#projects" class="contact-pill">Selected Works &#8595;</a>
           </div>
         </div>
@@ -2878,12 +3369,73 @@
       </div>
     </section>
 
-    <!-- ── 08. CONTACT ── -->
+    <!-- ── 08. CONNECT & CODING PROFILES (VERIFIED IDENTITIES) ── -->
+    <section id="profiles" class="section-wrap">
+      <div class="reveal">
+        <div class="eyebrow stem"><span class="eyebrow-dot"></span>08 // Verified Identities &amp; DSA</div>
+        <h2 class="section-title">Connect &amp; Coding Profiles</h2>
+        <p class="section-subtitle">
+          Directly verified developer handles and live competitive programming performance.
+        </p>
+      </div>
+
+      <div class="profiles-grid reveal delay-1">
+        <div class="profiles-card">
+          <ul class="profiles-list">
+            <li>
+              <a href="https://github.com/Yug-the-pirate-king" rel="me noopener" target="_blank" class="profile-link-item">
+                <span class="profile-icon">⌥</span>
+                <div class="profile-info">
+                  <strong>GitHub (@Yug-the-pirate-king)</strong>
+                  <span>Autonomous pipelines, SIH sea-ice models &amp; forensic tools</span>
+                </div>
+                <span class="arrow">&#8599;</span>
+              </a>
+            </li>
+            <li>
+              <a href="https://leetcode.com/u/Yugshah/" rel="me noopener" target="_blank" class="profile-link-item">
+                <span class="profile-icon">⚡</span>
+                <div class="profile-info">
+                  <strong>LeetCode (C++ Data Structures &amp; Algorithms)</strong>
+                  <span>@Yugshah &middot; 270+ solved &middot; Top 10% global ranking</span>
+                </div>
+                <span class="arrow">&#8599;</span>
+              </a>
+            </li>
+            <li>
+              <a href="https://www.linkedin.com/in/yug-shah26" rel="me noopener" target="_blank" class="profile-link-item">
+                <span class="profile-icon">in</span>
+                <div class="profile-info">
+                  <strong>LinkedIn (Yug Shah)</strong>
+                  <span>Professional network, research updates &middot; Connect with me</span>
+                </div>
+                <span class="arrow">&#8599;</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Live LeetCode Stats Card (Bonus) -->
+        <div class="profiles-stats-card">
+          <div class="stats-card-header">
+            <span class="live-dot"></span> Live LeetCode Performance &middot; @Yugshah
+          </div>
+          <a href="https://leetcode.com/u/Yugshah/" target="_blank" rel="me noopener" class="leetcode-stats-link" title="Visit Yug Shah's LeetCode Profile">
+            <img src="https://leetcard.jacoblin.cool/Yugshah?theme=dark&font=Space%20Grotesk&border=0" alt="Yug Shah LeetCode Stats Card" class="leetcode-card-img" loading="lazy">
+          </a>
+          <div style="font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace;">
+            Data synced live via LeetCode &bull; Solved: 275+ &bull; C++ DSA
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 09. CONTACT ── -->
     <section id="contact" class="section-wrap">
 
       <div class="contact-box reveal">
         <div>
-          <div class="eyebrow"><span class="eyebrow-dot"></span>08 // Let&rsquo;s Build Together</div>
+          <div class="eyebrow"><span class="eyebrow-dot"></span>09 // Let&rsquo;s Build Together</div>
           <h2 class="contact-cta-title">Grow something remarkable<br>with Yug Shah.</h2>
           <p class="section-subtitle" style="margin-top: 12px;">
             Open for research collaborations in AI/ML, cyber forensics, quantitative finance, and full-stack
@@ -2892,11 +3444,11 @@
         </div>
 
         <div class="contact-links">
-          <a href="https://shahyug.netlify.app" target="_blank" rel="noopener" class="contact-pill">shahyug.netlify.app
+          <a href="https://github.com/Yug-the-pirate-king" target="_blank" rel="me noopener" class="contact-pill">GitHub
             &#8599;</a>
-          <a href="https://github.com/Yug-the-pirate-king" target="_blank" rel="noopener" class="contact-pill">GitHub
+          <a href="https://www.linkedin.com/in/yug-shah26" target="_blank" rel="me noopener" class="contact-pill">LinkedIn
             &#8599;</a>
-          <a href="https://www.linkedin.com/in/yug-shah26" target="_blank" rel="noopener" class="contact-pill">LinkedIn
+          <a href="https://leetcode.com/u/Yugshah/" target="_blank" rel="me noopener" class="contact-pill">LeetCode
             &#8599;</a>
           <a href="#garden" id="footer-back-top" class="contact-pill primary">Back to Garden &#8593;</a>
         </div>
@@ -3440,7 +3992,7 @@
           item.addEventListener('click', function () {
             trackIndex = i;
             fakeCur = 0;
-            playTrack();
+            playTrack(true);
           });
           playlistTrackList.appendChild(item);
         });
@@ -3584,12 +4136,16 @@
         });
       }
 
-      function playTrack() {
+      function playTrack(forceReload) {
         updateTrackMeta();
         renderPlaylist();
         var t = tracks[trackIndex];
 
-        audioEl.src = t.file;
+        // Only reset src if we're loading a new track
+        if (forceReload || audioEl.getAttribute('data-current-index') != trackIndex) {
+          audioEl.src = t.file;
+          audioEl.setAttribute('data-current-index', trackIndex);
+        }
         var playPromise = audioEl.play();
         if (playPromise !== undefined) {
           playPromise.then(function () {
@@ -3611,9 +4167,33 @@
         setPlayingState(false);
       }
 
+      function resumeTrack() {
+        var playPromise = audioEl.play();
+        if (playPromise !== undefined) {
+          playPromise.then(function () {
+            stopWebAudioSynth();
+            setPlayingState(true);
+          }).catch(function () {
+            startWebAudioSynth();
+            setPlayingState(true);
+          });
+        } else {
+          startWebAudioSynth();
+          setPlayingState(true);
+        }
+      }
+
       function togglePlay() {
-        if (isPlaying) pauseTrack();
-        else playTrack();
+        if (isPlaying) {
+          pauseTrack();
+        } else {
+          // If audio has a src and we're on the same track, just resume
+          if (audioEl.src && audioEl.getAttribute('data-current-index') == trackIndex) {
+            resumeTrack();
+          } else {
+            playTrack(true);
+          }
+        }
       }
 
       // Audio element time tracking
@@ -3636,7 +4216,7 @@
       audioEl.addEventListener('ended', function () {
         trackIndex = getNextIndex();
         fakeCur = 0;
-        playTrack();
+        playTrack(true);
       });
 
       // Simulated progress when in synth mode
@@ -3664,14 +4244,14 @@
         nextBtn.addEventListener('click', function () {
           trackIndex = getNextIndex();
           fakeCur = 0;
-          playTrack();
+          playTrack(true);
         });
       }
       if (prevBtn) {
         prevBtn.addEventListener('click', function () {
           trackIndex = getPrevIndex();
           fakeCur = 0;
-          playTrack();
+          playTrack(true);
         });
       }
 
@@ -3765,6 +4345,43 @@
           }
         });
       }
+
+      // Mobile Hamburger Navigation Overlay
+      var hamburgerBtn = document.getElementById('hamburger-btn');
+      var mobileNav = document.getElementById('mobile-nav-overlay');
+      if (hamburgerBtn && mobileNav) {
+        function toggleMobileNav(force) {
+          var open = force !== undefined ? force : !hamburgerBtn.classList.contains('open');
+          hamburgerBtn.classList.toggle('open', open);
+          mobileNav.classList.toggle('open', open);
+          document.body.style.overflow = open ? 'hidden' : '';
+        }
+        hamburgerBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          toggleMobileNav();
+        });
+        mobileNav.querySelectorAll('.mobile-nav-link').forEach(function (link) {
+          link.addEventListener('click', function () {
+            toggleMobileNav(false);
+          });
+        });
+      }
+
+      var mobileReplayBtn = document.getElementById('mobile-replay-btn');
+      if (mobileReplayBtn) {
+        mobileReplayBtn.addEventListener('click', function () {
+          if (hamburgerBtn && mobileNav) {
+            hamburgerBtn.classList.remove('open');
+            mobileNav.classList.remove('open');
+            document.body.style.overflow = '';
+          }
+          if (window._tg) {
+            if (window._tg.state.mode !== 'type') window._tg.setState({ mode: 'type' });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window._tg.startIntroSequence();
+          }
+        });
+      }
     });
 
 
@@ -3847,7 +4464,10 @@
       }
 
       // Automated Portfolio Intro Sequence:
-      // 1) "Hello I am Yug Shah" -> bloom pause -> 2) clear -> 3) "Welcome to my portfolio" -> show prompt
+      // 1) "Hello I am Yug Shah" -> bloom
+      // 2) clear -> "This is my portfolio" -> bloom
+      // 3) clear -> "Type anything over here" -> bloom
+      // 4) clear completely so user has a clean canvas and knows they can type!
       startIntroSequence() {
         this.cancelIntroSequence();
         this.letters = [];
@@ -3866,9 +4486,10 @@
         }
 
         const phrase1 = 'Hello I am Yug Shah';
-        const phrase2 = 'Welcome to my portfolio';
-        const charDelay = 95;
-        let t = 450;
+        const phrase2 = 'This is my portfolio';
+        const phrase3 = 'Type anything over here';
+        const charDelay = 75;
+        let t = 400;
 
         const schedule = (fn, delay) => {
           const id = setTimeout(fn, delay);
@@ -3884,19 +4505,19 @@
             this.lastKey = now;
             this.add(ch, now);
           }, t);
-          t += ch === ' ' ? charDelay * 1.35 : charDelay;
+          t += ch === ' ' ? charDelay * 1.3 : charDelay;
         }
 
         // Spawn a celebratory butterfly mid-bloom
         schedule(() => {
           if (!this.introActive) return;
           this.spawnFly(this.W * 0.65, this.H * 0.38);
-        }, t + 500);
+        }, t + 350);
 
-        // Step 2: Pause ~2.2 seconds for roses to bloom fully
-        t += 2250;
+        // Pause for phrase1 to bloom
+        t += 1700;
 
-        // Step 3: Smoothly wither all letters (like clearing the garden)
+        // Step 2: Smoothly wither all letters
         schedule(() => {
           if (!this.introActive) return;
           const now = performance.now();
@@ -3908,19 +4529,19 @@
           }
         }, t);
 
-        t += 520;
+        t += 480;
         schedule(() => {
           if (!this.introActive) return;
           this.letters = [];
           this.layout(true);
           if (this.introStatusTextEl) {
-            this.introStatusTextEl.textContent = 'Growing: "Welcome to my portfolio"';
+            this.introStatusTextEl.textContent = 'Growing: "This is my portfolio"';
           }
         }, t);
 
-        t += 220;
+        t += 180;
 
-        // Step 4: Type "Welcome to my portfolio"
+        // Step 3: Type "This is my portfolio"
         for (let i = 0; i < phrase2.length; i++) {
           const ch = phrase2[i];
           schedule(() => {
@@ -3929,23 +4550,82 @@
             this.lastKey = now;
             this.add(ch, now);
           }, t);
-          t += ch === ' ' ? charDelay * 1.35 : charDelay;
+          t += ch === ' ' ? charDelay * 1.3 : charDelay;
         }
 
-        // Step 5: Reveal interactive prompt & arm first-key auto-clear
-        t += 700;
+        // Pause for phrase2 to bloom
+        t += 1400;
+
+        // Step 4: Smoothly wither phrase2
         schedule(() => {
           if (!this.introActive) return;
+          const now = performance.now();
+          for (const l of this.letters) {
+            if (!l.dead) l.dead = now;
+          }
+          if (this.introStatusTextEl) {
+            this.introStatusTextEl.textContent = 'Clearing garden…';
+          }
+        }, t);
+
+        t += 480;
+        schedule(() => {
+          if (!this.introActive) return;
+          this.letters = [];
+          this.layout(true);
+          if (this.introStatusTextEl) {
+            this.introStatusTextEl.textContent = 'Notice: "Type anything over here"';
+          }
+        }, t);
+
+        t += 180;
+
+        // Step 5: Type "Type anything over here"
+        for (let i = 0; i < phrase3.length; i++) {
+          const ch = phrase3[i];
+          schedule(() => {
+            if (!this.introActive) return;
+            const now = performance.now();
+            this.lastKey = now;
+            this.add(ch, now);
+          }, t);
+          t += ch === ' ' ? charDelay * 1.3 : charDelay;
+        }
+
+        // Pause so user sees "Type anything over here" in full bloom
+        t += 1750;
+
+        // Step 6: Smoothly wither phrase3 so the canvas is clean and ready for user!
+        schedule(() => {
+          if (!this.introActive) return;
+          const now = performance.now();
+          for (const l of this.letters) {
+            if (!l.dead) l.dead = now;
+          }
+          if (this.introStatusTextEl) {
+            this.introStatusTextEl.textContent = 'Clearing garden for you…';
+          }
+        }, t);
+
+        t += 520;
+        schedule(() => {
+          if (!this.introActive) return;
+          this.letters = [];
+          this.layout(true);
           this.introActive = false;
-          this.awaitingFirstUserKey = true;
-          this.spawnFly(this.W * 0.35, this.H * 0.42);
+          this.awaitingFirstUserKey = false;
+          this.spawnFly(this.W * 0.45, this.H * 0.42);
+
           if (this.introStatusTextEl) {
             this.introDotEl.style.display = 'none';
-            this.introStatusTextEl.textContent = 'Interactive Garden Ready — Type anything or scroll ↓';
+            this.introStatusTextEl.textContent = '✨ Canvas ready — start typing anything on your keyboard!';
           }
           if (this.heroPromptEl) {
             this.heroPromptEl.style.opacity = '1';
             this.heroPromptEl.style.pointerEvents = 'auto';
+          }
+          if (this.inp.current) {
+            this.inp.current.focus({ preventScroll: true });
           }
         }, t);
       }
@@ -4015,18 +4695,15 @@
         // App pointerdown & click focus
         this.appEl.addEventListener('pointerdown', ev => {
           if (this.state.mode !== 'type' || !this.inp.current) return;
-          const touch = ev && ev.pointerType && ev.pointerType !== 'mouse';
           const onCanvas = ev && ev.target === this.cv.current;
-          if (touch) {
-            if (ev.cancelable && (onCanvas || (ev.target.closest && ev.target.closest('button')))) ev.preventDefault();
-          } else if (onCanvas) {
+          if (onCanvas) {
             this.inp.current.focus({ preventScroll: true });
+            this.spawnFly(ev.clientX, ev.clientY);
           }
-          if (onCanvas) this.spawnFly(ev.clientX, ev.clientY);
         });
 
         this.appEl.addEventListener('click', ev => {
-          if (this.state.mode === 'type' && this.inp.current && this.ptype !== 'mouse' && ev.target === this.cv.current) {
+          if (this.state.mode === 'type' && this.inp.current && ev.target === this.cv.current) {
             this.inp.current.focus({ preventScroll: true });
           }
         });

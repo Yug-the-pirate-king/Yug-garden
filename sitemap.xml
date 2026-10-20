@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://yugshah.xyz/</loc>
-    <lastmod>2026-10-18</lastmod>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://yugshah.xyz/yug-shah.jpg</image:loc>
+      <image:title>Yug Shah - Shah Yug Vipulbhai</image:title>
+      <image:caption>Official portrait of Yug Shah (Shah Yug Vipulbhai)</image:caption>
+    </image:image>
   </url>
 </urlset>

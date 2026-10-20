@@ -12,7 +12,11 @@
   <meta name="author" content="Yug Shah">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://yugshah.xyz/">
-  <link rel="icon" type="image/webp" href="./index_files/favicon.webp">
+
+  <!-- Google Search Favicon (Must be a multiple of 48px) -->
+  <link rel="icon" type="image/png" href="https://yugshah.xyz/favicon.png" sizes="96x96">
+  <link rel="apple-touch-icon" href="https://yugshah.xyz/favicon.png">
+  <link rel="shortcut icon" href="https://yugshah.xyz/favicon.png">
 
   <!-- Open Graph (Social Preview for LinkedIn, WhatsApp, Discord) -->
   <meta property="og:type" content="website">
@@ -21,40 +25,63 @@
     content="Explore the software engineering, C++ DSA, AI, and cybersecurity projects of Yug Shah.">
   <meta property="og:url" content="https://yugshah.xyz/">
   <meta property="og:site_name" content="Yug Shah">
+  <meta name="application-name" content="Yug Shah">
 
-  <!-- Google Knowledge Graph Schema (Connects GitHub, LinkedIn & LeetCode) -->
+  <!-- Thumbnail & Open Graph Image for Google Search -->
+  <meta property="og:image" content="https://yugshah.xyz/yug-shah.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://yugshah.xyz/yug-shah.jpg">
+
+  <!-- Google Knowledge Graph Schema (Site Name & Person Knowledge Graph) -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "Yug Shah",
-    "alternateName": "Shah Yug Vipulbhai",
-    "url": "https://yugshah.xyz/",
-    "jobTitle": "Computer Science & Engineering Student and Developer",
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": "Mumbai",
-      "addressRegion": "Maharashtra",
-      "addressCountry": "IN"
-    },
-    "affiliation": {
-      "@type": "CollegeOrUniversity",
-      "name": "SVKM's Shri Bhagubhai Mafatlal Polytechnic and College of Engineering"
-    },
-    "knowsAbout": [
-      "Data Structures and Algorithms",
-      "C++",
-      "Python",
-      "React",
-      "Full-Stack Web Development",
-      "Cybersecurity",
-      "Machine Learning",
-      "Quantitative Finance"
-    ],
-    "sameAs": [
-      "https://github.com/Yug-the-pirate-king",
-      "https://leetcode.com/u/Yugshah/",
-      "https://www.linkedin.com/in/yug-shah26"
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://yugshah.xyz/#website",
+        "name": "Yug Shah",
+        "alternateName": [
+          "Shah Yug Vipulbhai",
+          "Yug's Digital Garden",
+          "yugshah.xyz"
+        ],
+        "url": "https://yugshah.xyz/"
+      },
+      {
+        "@type": "Person",
+        "@id": "https://yugshah.xyz/#person",
+        "name": "Yug Shah",
+        "alternateName": "Shah Yug Vipulbhai",
+        "url": "https://yugshah.xyz/",
+        "image": "https://yugshah.xyz/yug-shah.jpg",
+        "jobTitle": "Computer Science & Engineering Student and Developer",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Mumbai",
+          "addressRegion": "Maharashtra",
+          "addressCountry": "IN"
+        },
+        "affiliation": {
+          "@type": "CollegeOrUniversity",
+          "name": "SVKM's Shri Bhagubhai Mafatlal Polytechnic and College of Engineering"
+        },
+        "knowsAbout": [
+          "Data Structures and Algorithms",
+          "C++",
+          "Python",
+          "React",
+          "Full-Stack Web Development",
+          "Cybersecurity",
+          "Machine Learning",
+          "Quantitative Finance"
+        ],
+        "sameAs": [
+          "https://github.com/Yug-the-pirate-king",
+          "https://leetcode.com/u/Yugshah/",
+          "https://www.linkedin.com/in/yug-shah26"
+        ]
+      }
     ]
   }
   </script>
@@ -3219,7 +3246,7 @@
         <!-- 02. Best Speaker in Finance at BlackRock Debate -->
         <div class="polaroid-card">
           <div class="polaroid-tape"></div>
-          <img src="./index_files/yug-blackrock-debate.jpg" class="polaroid-photo" alt="Yug Shah Best Speaker in Finance BlackRock" loading="lazy">
+          <img src="https://yugshah.xyz/yug-shah.jpg" class="polaroid-photo" alt="Yug Shah - Shah Yug Vipulbhai" width="400" height="400" loading="lazy">
           <div class="polaroid-caption">Best Speaker in Finance</div>
           <div class="polaroid-tag">BlackRock Portfolio Defense &middot; ACE Senate</div>
         </div>

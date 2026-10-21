@@ -3,13 +3,13 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://yugshah.xyz/</loc>
-    <lastmod>2026-10-20</lastmod>
+    <lastmod>2026-10-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
       <image:loc>https://yugshah.xyz/yug-shah.jpg</image:loc>
-      <image:title>Yug Shah - Shah Yug Vipulbhai</image:title>
-      <image:caption>Official portrait of Yug Shah (Shah Yug Vipulbhai)</image:caption>
+      <image:title>Yug Shah - Computer Science Developer</image:title>
+      <image:caption>Official portrait of Yug Shah (Shah Yug Vipulbhai), B.Tech Computer Science and Engineering developer in Mumbai.</image:caption>
     </image:image>
   </url>
 </urlset>

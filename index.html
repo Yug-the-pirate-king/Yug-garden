@@ -5,34 +5,39 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Primary SEO Title & Description -->
-  <title>Yug Shah (Shah Yug Vipulbhai) | CS Developer, LeetCode &amp; Portfolio</title>
+  <!-- Primary SEO Title & Description (Starts cleanly with "Yug Shah" for Rank #1) -->
+  <title>Yug Shah - Computer Science Developer, AI &amp; Cybersecurity Portfolio</title>
   <meta name="description"
-    content="Official portfolio of Yug Shah (Shah Yug Vipulbhai), a B.Tech Computer Science and Engineering student in Mumbai specializing in C++ DSA, Full-Stack Development, Cybersecurity, and AI.">
+    content="Yug Shah (Shah Yug Vipulbhai) — B.Tech Computer Science and Engineering developer in Mumbai specializing in Full-Stack Development, C++ DSA, Cybersecurity, and AI.">
   <meta name="author" content="Yug Shah">
-  <meta name="robots" content="index, follow">
+  <meta name="robots" content="index, follow, max-image-preview:large">
   <link rel="canonical" href="https://yugshah.xyz/">
 
-  <!-- Google Search Favicon (Must be a multiple of 48px) -->
+  <!-- Google Search Favicon (Ensure favicon.png in your repo root is 96x96 or 512x512 px) -->
   <link rel="icon" type="image/png" href="https://yugshah.xyz/favicon.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="https://yugshah.xyz/favicon.png" sizes="512x512">
   <link rel="apple-touch-icon" href="https://yugshah.xyz/favicon.png">
   <link rel="shortcut icon" href="https://yugshah.xyz/favicon.png">
 
-  <!-- Open Graph (Social Preview for LinkedIn, WhatsApp, Discord) -->
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Yug Shah | Developer Portfolio &amp; Digital Garden">
+  <!-- Open Graph & Site Name -->
+  <meta property="og:type" content="profile">
+  <meta property="og:title" content="Yug Shah - Computer Science Developer &amp; Portfolio">
   <meta property="og:description"
-    content="Explore the software engineering, C++ DSA, AI, and cybersecurity projects of Yug Shah.">
+    content="Official portfolio of Yug Shah (Shah Yug Vipulbhai), Computer Science researcher and developer in Mumbai.">
   <meta property="og:url" content="https://yugshah.xyz/">
   <meta property="og:site_name" content="Yug Shah">
   <meta name="application-name" content="Yug Shah">
 
-  <!-- Thumbnail & Open Graph Image for Google Search -->
+  <!-- Primary Image for Google Search & Top Image Grid -->
   <meta property="og:image" content="https://yugshah.xyz/yug-shah.jpg">
+  <meta property="og:image:alt" content="Yug Shah - Computer Science Developer in Mumbai">
+  <meta property="og:image:width" content="800">
+  <meta property="og:image:height" content="800">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Yug Shah - Computer Science Developer">
   <meta name="twitter:image" content="https://yugshah.xyz/yug-shah.jpg">
 
-  <!-- Google Knowledge Graph Schema (Site Name & Person Knowledge Graph) -->
+  <!-- Google Knowledge Graph Schema (Forces "Yug Shah" Site Name + Image Pack Indexing) -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -41,12 +46,27 @@
         "@type": "WebSite",
         "@id": "https://yugshah.xyz/#website",
         "name": "Yug Shah",
-        "alternateName": [
-          "Shah Yug Vipulbhai",
-          "Yug's Digital Garden",
-          "yugshah.xyz"
-        ],
+        "alternateName": "Yug Shah Portfolio",
         "url": "https://yugshah.xyz/"
+      },
+      {
+        "@type": "ProfilePage",
+        "@id": "https://yugshah.xyz/#profilepage",
+        "url": "https://yugshah.xyz/",
+        "name": "Yug Shah - Computer Science Developer & Portfolio",
+        "isPartOf": { "@id": "https://yugshah.xyz/#website" },
+        "mainEntity": { "@id": "https://yugshah.xyz/#person" },
+        "primaryImageOfPage": { "@id": "https://yugshah.xyz/#primaryimage" }
+      },
+      {
+        "@type": "ImageObject",
+        "@id": "https://yugshah.xyz/#primaryimage",
+        "url": "https://yugshah.xyz/yug-shah.jpg",
+        "contentUrl": "https://yugshah.xyz/yug-shah.jpg",
+        "caption": "Yug Shah - Computer Science Developer in Mumbai",
+        "name": "Yug Shah",
+        "width": 800,
+        "height": 800
       },
       {
         "@type": "Person",
@@ -54,7 +74,7 @@
         "name": "Yug Shah",
         "alternateName": "Shah Yug Vipulbhai",
         "url": "https://yugshah.xyz/",
-        "image": "https://yugshah.xyz/yug-shah.jpg",
+        "image": { "@id": "https://yugshah.xyz/#primaryimage" },
         "jobTitle": "Computer Science & Engineering Student and Developer",
         "address": {
           "@type": "PostalAddress",
@@ -2766,7 +2786,7 @@
   <header id="top-nav">
     <a href="#garden" class="nav-brand">
       <span class="nav-flower-dot"></span>
-      <span class="nav-brand-title">Yug Shah
+      <span class="nav-brand-title">Yug Shah</span>
     </a>
 
     <nav>
@@ -2931,7 +2951,20 @@
       <div class="about-grid">
         <div class="reveal">
           <div class="eyebrow"><span class="eyebrow-dot"></span>01 // Identity</div>
-          <h1 class="section-title">Shah Yug<br><em>Vipulbhai</em></h1>
+          <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 16px; flex-wrap: wrap;">
+            <img src="https://yugshah.xyz/yug-shah.jpg"
+                 alt="Yug Shah - Computer Science Developer in Mumbai"
+                 title="Yug Shah"
+                 width="110" height="110"
+                 fetchpriority="high"
+                 style="width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 2px solid var(--flower); box-shadow: 0 8px 24px var(--flower-glow); flex-shrink: 0;">
+            <div>
+              <h1 class="section-title" style="margin-bottom: 4px;">Yug <em>Shah</em></h1>
+              <div style="font-family: 'Space Grotesk', sans-serif; font-size: 14px; color: var(--text-muted); letter-spacing: 0.04em;">
+                Shah Yug Vipulbhai
+              </div>
+            </div>
+          </div>
           <p class="section-subtitle">
             Mumbai, India &middot; B.Tech Computer Science &amp; Engineering (2024&ndash;2028)
           </p>
@@ -3246,7 +3279,7 @@
         <!-- 02. Best Speaker in Finance at BlackRock Debate -->
         <div class="polaroid-card">
           <div class="polaroid-tape"></div>
-          <img src="https://yugshah.xyz/yug-shah.jpg" class="polaroid-photo" alt="Yug Shah - Shah Yug Vipulbhai" width="400" height="400" loading="lazy">
+          <img src="https://yugshah.xyz/yug-shah.jpg" class="polaroid-photo" alt="Yug Shah - Best Speaker in Finance at ACE Senate" width="400" height="400">
           <div class="polaroid-caption">Best Speaker in Finance</div>
           <div class="polaroid-tag">BlackRock Portfolio Defense &middot; ACE Senate</div>
         </div>

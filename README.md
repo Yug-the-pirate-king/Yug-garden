@@ -1,8 +1,12 @@
 # Yug Shah - Portfolio & TypeGarden
 
-Personal portfolio and interactive web experience for **Yug Shah** (Shah Yug Vipulbhai) — Computer Science and Engineering developer, researcher, and builder based in Mumbai.
+Personal portfolio and interactive web experience for **Yug Shah** (Shah Yug Vipulbhai) — Software developer and Computer Science & Engineering student at SVKM's Shri Bhagubhai Mafatlal Polytechnic & College of Engineering based in Mumbai, Mumbai Metropolitan Region (MMR), Maharashtra, India.
 
-Live Website: [https://yugshah.xyz](https://yugshah.xyz)
+- Live Website: [https://yugshah.xyz](https://yugshah.xyz)
+- Linktree: [https://linktr.ee/yugvshah](https://linktr.ee/yugvshah)
+- GitHub: [https://github.com/Yug-the-pirate-king](https://github.com/Yug-the-pirate-king)
+- LinkedIn: [https://www.linkedin.com/in/yug-shah26](https://www.linkedin.com/in/yug-shah26)
+- LeetCode: [https://leetcode.com/u/Yugshah/](https://leetcode.com/u/Yugshah/)
 
 ## Features
 
